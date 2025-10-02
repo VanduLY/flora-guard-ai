@@ -37,7 +37,7 @@ const Footer = () => {
           {/* Credits */}
           <div className="text-center md:text-right text-sm text-muted-foreground">
             <div>© {currentYear} FloraGuard</div>
-            <div className="mt-1">Developed by Department of Vandana</div>
+            <div className="mt-1">Developed by Vandana</div>
           </div>
         </div>
       </div>
