@@ -1,4 +1,7 @@
 import { Code2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const techCategories = [
   {
@@ -34,30 +37,83 @@ const techCategories = [
 ];
 
 const TechStack = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+  };
+
   return (
-    <section className="py-20 bg-background">
+    <section ref={ref} className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6 animate-scale-in">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.div 
+            className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
+            transition={{ duration: 0.6, type: "spring" }}
+          >
             <Code2 className="w-8 h-8 text-primary" />
-          </div>
+          </motion.div>
           
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             System Specifications
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in-up">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Built with modern, scalable technologies for reliability and performance
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {techCategories.map((item, index) => (
-            <div
+            <motion.div
               key={item.category}
-              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 animate-fade-in-up group"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              variants={cardVariants}
+              whileHover={{ 
+                y: -6, 
+                scale: 1.02,
+                transition: { duration: 0.3 } 
+              }}
+              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-shadow duration-300 cursor-pointer"
             >
-              <div className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4 group-hover:h-2 transition-all`} />
+              <motion.div 
+                className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4`}
+                initial={{ scaleX: 0 }}
+                animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 + index * 0.08 }}
+                style={{ transformOrigin: "left" }}
+              />
               
               <h3 className="text-lg font-bold text-foreground mb-2">
                 {item.category}
@@ -66,9 +122,9 @@ const TechStack = () => {
               <p className="text-muted-foreground">
                 {item.tech}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

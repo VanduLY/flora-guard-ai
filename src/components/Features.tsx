@@ -1,4 +1,7 @@
 import { Scan, Calendar, BarChart3, Cloud, Leaf } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const features = [
   {
@@ -29,28 +32,74 @@ const features = [
 ];
 
 const Features = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  };
+
   return (
-    <section className="py-20 bg-background">
+    <section ref={ref} className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Proposed System Features
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in-up">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Everything you need to become the best plant parent, powered by cutting-edge technology
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {features.map((feature, index) => (
-            <div
+            <motion.div
               key={feature.title}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-300 hover:-translate-y-2 animate-fade-in-up group"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              variants={cardVariants}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.02,
+                transition: { duration: 0.3 } 
+              }}
+              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-shadow duration-300 group cursor-pointer"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6 group-hover:scale-110 transition-transform">
+              <motion.div 
+                className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <feature.icon className="w-7 h-7 text-white" />
-              </div>
+              </motion.div>
               
               <h3 className="text-xl font-bold text-foreground mb-3">
                 {feature.title}
@@ -59,9 +108,9 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

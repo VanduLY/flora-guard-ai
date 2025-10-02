@@ -1,36 +1,80 @@
-import { Leaf } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
+import { AlertCircle, Sparkles } from "lucide-react";
 
 const About = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <section className="py-20 bg-gradient-soft">
+    <section ref={ref} className="py-20 bg-gradient-soft">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6 animate-scale-in">
-            <Leaf className="w-8 h-8 text-primary" />
+        <motion.div 
+          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.8, ease: [0.6, 0.05, 0.01, 0.9] }}
+        >
+          <div className="text-center mb-12">
+            <motion.div 
+              className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6"
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : { scale: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Sparkles className="w-8 h-8 text-primary" />
+            </motion.div>
+            
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold text-foreground mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              About FloraGuard
+            </motion.h2>
           </div>
-          
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 animate-fade-in">
-            The Problem We Solve
-          </h2>
-          
-          <p className="text-lg text-muted-foreground mb-8 animate-fade-in-up">
-            In today's fast-paced world, people often neglect their plants due to busy schedules, 
-            lack of knowledge, or simply forgetting about their care needs. Plants wither, diseases 
-            go unnoticed, and the joy of nurturing green life fades away.
-          </p>
-          
-          <div className="bg-card rounded-2xl p-8 shadow-medium animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              Introducing FloraGuard
-            </h3>
-            <p className="text-foreground leading-relaxed">
-              FloraGuard is your intelligent companion for plant care, combining AI-powered disease 
-              detection, personalized care plans, climate integration, and gamification to make 
-              plant parenting effortless and engaging. From watering reminders to tracking your 
-              carbon footprint, FloraGuard ensures your plants thrive while you grow as a caretaker.
-            </p>
-          </div>
-        </div>
+
+          <motion.div 
+            className="bg-card rounded-2xl p-8 md:p-12 shadow-large"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <div className="flex items-start gap-4 mb-6">
+              <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-3">The Problem</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  In today's fast-paced world, many people struggle to care for their indoor plants. 
+                  Busy schedules, lack of knowledge, and forgetfulness lead to neglected plants, 
+                  disease outbreaks, and ultimately, plant loss.
+                </p>
+              </div>
+            </div>
+
+            <div className="h-px bg-border my-8" />
+
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-3">The Solution</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-primary">FloraGuard</span> is an AI-powered 
+                  virtual plant caretaker that helps you nurture healthy, thriving plants. With 
+                  intelligent disease detection, personalized care schedules, weather integration, 
+                  and gamification, we make plant care simple, engaging, and sustainable. Never 
+                  forget to water again, detect problems early, and watch your green companions flourish.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
