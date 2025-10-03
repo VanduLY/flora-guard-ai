@@ -3,8 +3,10 @@ import { Sparkles, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Conclusion = () => {
+  const navigate = useNavigate();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -87,6 +89,7 @@ const Conclusion = () => {
               size="lg" 
               variant="hero"
               className="group"
+              onClick={() => navigate("/detect")}
             >
               Join FloraGuard Today
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

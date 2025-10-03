@@ -1,1 +1,4 @@
 project_id = "olpxhavmucrysbdamooy"
+
+[functions.kan-analyze-plant]
+verify_jwt = false

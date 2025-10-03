@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      plant_diseases: {
+        Row: {
+          affected_plants: string[] | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          prevention: string[] | null
+          scientific_name: string | null
+          severity: string | null
+          symptoms: string[] | null
+          treatment: string[] | null
+        }
+        Insert: {
+          affected_plants?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          prevention?: string[] | null
+          scientific_name?: string | null
+          severity?: string | null
+          symptoms?: string[] | null
+          treatment?: string[] | null
+        }
+        Update: {
+          affected_plants?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          prevention?: string[] | null
+          scientific_name?: string | null
+          severity?: string | null
+          symptoms?: string[] | null
+          treatment?: string[] | null
+        }
+        Relationships: []
+      }
+      plant_scans: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          diagnosis: string | null
+          disease_detected: string | null
+          health_status: string
+          id: string
+          image_url: string
+          location: string | null
+          plant_type: string | null
+          recommendations: string[] | null
+          user_id: string | null
+          weather_data: Json | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          diagnosis?: string | null
+          disease_detected?: string | null
+          health_status: string
+          id?: string
+          image_url: string
+          location?: string | null
+          plant_type?: string | null
+          recommendations?: string[] | null
+          user_id?: string | null
+          weather_data?: Json | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          diagnosis?: string | null
+          disease_detected?: string | null
+          health_status?: string
+          id?: string
+          image_url?: string
+          location?: string | null
+          plant_type?: string | null
+          recommendations?: string[] | null
+          user_id?: string | null
+          weather_data?: Json | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          location: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

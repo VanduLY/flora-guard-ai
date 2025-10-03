@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import heroImage from "@/assets/hero-plants.jpg";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -103,6 +106,7 @@ const Hero = () => {
               size="lg" 
               variant="hero"
               className="group"
+              onClick={() => navigate("/detect")}
             >
               Get Started
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -111,6 +115,7 @@ const Hero = () => {
               size="lg" 
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-primary"
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Learn More
             </Button>
