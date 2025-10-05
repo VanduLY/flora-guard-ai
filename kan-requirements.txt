@@ -1,0 +1,7 @@
+﻿fastapi
+uvicorn
+tensorflow
+opencv-python
+numpy
+flask-cors  # if using Flask
+requests
