@@ -65,8 +65,14 @@ const TechStack = () => {
   };
 
   return (
-    <section ref={ref} className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section ref={ref} className="py-20 bg-background relative overflow-hidden">
+      {/* Animated gradient mesh background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 right-10 w-96 h-96 gradient-mesh rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 gradient-mesh rounded-full blur-3xl" style={{ animationDelay: '4s' }} />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -105,10 +111,10 @@ const TechStack = () => {
                 scale: 1.02,
                 transition: { duration: 0.3 } 
               }}
-              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-shadow duration-300 cursor-pointer"
+              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 cursor-pointer glass-morph border border-border/30 group"
             >
               <motion.div 
-                className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4`}
+                className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4 group-hover:h-1.5 transition-all duration-300`}
                 initial={{ scaleX: 0 }}
                 animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 + index * 0.08 }}

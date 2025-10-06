@@ -88,7 +88,7 @@ const Conclusion = () => {
             <Button 
               size="lg" 
               variant="hero"
-              className="group"
+              className="group magnetic-btn"
               onClick={() => navigate("/detect")}
             >
               Join FloraGuard Today
@@ -97,7 +97,7 @@ const Conclusion = () => {
             <Button 
               size="lg" 
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary"
+              className="border-white text-white hover:bg-white hover:text-primary magnetic-btn"
             >
               Watch Demo
             </Button>

@@ -8,8 +8,12 @@ const About = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="about" ref={ref} className="py-20 bg-gradient-soft">
-      <div className="container mx-auto px-4">
+    <section id="about" ref={ref} className="py-20 bg-gradient-soft relative overflow-hidden">
+      {/* Animated gradient orbs */}
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
@@ -37,10 +41,11 @@ const About = () => {
           </div>
 
           <motion.div 
-            className="bg-card rounded-2xl p-8 md:p-12 shadow-large"
+            className="bg-card rounded-2xl p-8 md:p-12 shadow-large glass-morph border border-border/30"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8, delay: 0.4 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-start gap-4 mb-6">
               <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">

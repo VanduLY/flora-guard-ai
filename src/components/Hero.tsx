@@ -32,9 +32,9 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero animate-gradient">
-      {/* Background image with overlay */}
+      {/* Background image with overlay - parallax effect */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 parallax-slow"
         style={{
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
@@ -43,12 +43,12 @@ const Hero = () => {
         }}
       />
       
-      {/* Floating leaf particles */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Floating leaf particles with parallax */}
+      <div className="absolute inset-0 z-0 overflow-hidden parallax-fast">
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-20 h-20 bg-white/10 rounded-full blur-xl"
+            className="absolute w-20 h-20 bg-white/10 rounded-full blur-xl animate-breathe"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
@@ -85,7 +85,7 @@ const Hero = () => {
           </motion.div>
           
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal"
             variants={itemVariants}
           >
             FloraGuard – Your Virtual Plant Caretaker
@@ -105,7 +105,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               variant="hero"
-              className="group"
+              className="group magnetic-btn"
               onClick={() => navigate("/detect")}
             >
               Get Started
@@ -114,7 +114,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary"
+              className="border-white text-white hover:bg-white hover:text-primary magnetic-btn"
               onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Learn More

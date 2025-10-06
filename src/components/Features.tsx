@@ -60,8 +60,12 @@ const Features = () => {
   };
 
   return (
-    <section ref={ref} className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section ref={ref} className="py-20 bg-background relative overflow-hidden">
+      {/* Gradient background blob */}
+      <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-breathe" />
+      <div className="absolute bottom-20 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-breathe" style={{ animationDelay: '1s' }} />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -91,7 +95,8 @@ const Features = () => {
                 scale: 1.02,
                 transition: { duration: 0.3 } 
               }}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-shadow duration-300 group cursor-pointer"
+              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-300 group cursor-pointer glass-morph border border-border/50 feature-card"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <motion.div 
                 className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6"

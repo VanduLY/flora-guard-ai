@@ -47,8 +47,12 @@ const Comparison = () => {
   };
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-soft">
-      <div className="container mx-auto px-4">
+    <section ref={ref} className="py-20 bg-gradient-soft relative overflow-hidden">
+      {/* Floating gradient orbs */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '3s' }} />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -66,10 +70,11 @@ const Comparison = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Advantages */}
           <motion.div 
-            className="bg-card rounded-2xl p-8 shadow-large"
+            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-primary/30 transition-all duration-500"
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -99,10 +104,11 @@ const Comparison = () => {
 
           {/* Limitations */}
           <motion.div 
-            className="bg-card rounded-2xl p-8 shadow-large"
+            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-destructive/30 transition-all duration-500"
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
