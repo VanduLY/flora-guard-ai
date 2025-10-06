@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Features from "@/components/Features";
@@ -15,7 +16,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <ThemeToggle />
         <Button onClick={() => navigate("/login")} size="lg">
           <LogIn className="w-4 h-4 mr-2" />
           Sign In
