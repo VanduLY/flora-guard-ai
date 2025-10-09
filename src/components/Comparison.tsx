@@ -48,9 +48,9 @@ const Comparison = () => {
 
   return (
     <section ref={ref} className="py-20 bg-gradient-soft relative overflow-hidden">
-      {/* Floating gradient orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '3s' }} />
+      {/* Floating gradient orbs with perpetual motion */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl float-drift float-slow" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl float-sway float-glacial float-delay-4" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -70,15 +70,15 @@ const Comparison = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Advantages */}
           <motion.div 
-            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-primary/30 transition-all duration-500"
+            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-primary/30 transition-all duration-500 float-gentle float-medium"
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center float-breathing">
+                <CheckCircle className="w-6 h-6 text-primary float-bob float-delay-1" />
               </div>
               <h3 className="text-2xl font-bold text-foreground">Advantages</h3>
             </div>
@@ -104,15 +104,15 @@ const Comparison = () => {
 
           {/* Limitations */}
           <motion.div 
-            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-destructive/30 transition-all duration-500"
+            className="bg-card rounded-2xl p-8 shadow-large glass-morph border border-border/30 hover:border-destructive/30 transition-all duration-500 float-gentle float-medium float-delay-2"
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-destructive" />
+              <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center float-breathing">
+                <AlertTriangle className="w-6 h-6 text-destructive float-bob float-delay-3" />
               </div>
               <h3 className="text-2xl font-bold text-foreground">Limitations</h3>
             </div>

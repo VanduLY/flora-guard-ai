@@ -66,11 +66,12 @@ const Methodology = () => {
                   }}
                 >
                   <motion.div 
-                    className="relative"
+                    className="relative float-bob float-medium"
                     whileHover={{ scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300 }}
+                    style={{ animationDelay: `${index * 0.2}s` }}
                   >
-                    <div className="w-20 h-20 bg-card rounded-full flex items-center justify-center shadow-medium mb-4 border-4 border-background">
+                    <div className="w-20 h-20 bg-card rounded-full flex items-center justify-center shadow-medium mb-4 border-4 border-background float-breathing">
                       <motion.div 
                         className="w-14 h-14 bg-gradient-primary rounded-full flex items-center justify-center"
                         whileHover={{ rotate: 360 }}

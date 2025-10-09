@@ -9,8 +9,8 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           {/* Logo and tagline */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <Leaf className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center float-breathing">
+              <Leaf className="w-6 h-6 text-white float-bob float-delay-1" />
             </div>
             <div>
               <div className="font-bold text-xl text-foreground">FloraGuard</div>

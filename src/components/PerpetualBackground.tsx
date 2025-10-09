@@ -1,113 +1,182 @@
-import { Leaf } from "lucide-react";
+import { Leaf, Sparkles, Circle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const PerpetualBackground = () => {
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
   return (
     <div className="perpetual-motion-bg">
-      {/* Drifting leaf particles */}
-      {[...Array(15)].map((_, i) => (
+      {/* Drifting leaf particles with varied motion */}
+      {[...Array(20)].map((_, i) => (
         <motion.div
           key={`drift-${i}`}
-          className="absolute drift-particles"
+          className="absolute"
           style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            top: `${random(0, 100)}%`,
+            left: `${random(0, 100)}%`,
           }}
           animate={{
-            y: [0, -100, -200, -100, 0],
-            x: [0, 50, -30, 40, 0],
-            rotate: [0, 180, 360, 180, 0],
-            opacity: [0.1, 0.3, 0.2, 0.3, 0.1],
+            y: [0, random(-150, -50), random(-250, -150), random(-150, -50), 0],
+            x: [0, random(-30, 50), random(-50, 30), random(-30, 50), 0],
+            rotate: [0, random(90, 180), random(270, 360), random(90, 180), 0],
+            scale: [1, random(0.8, 1.2), random(0.9, 1.1), random(0.8, 1.2), 1],
+            opacity: [0.1, random(0.2, 0.4), random(0.15, 0.3), random(0.2, 0.4), 0.1],
           }}
           transition={{
-            duration: 25 + i * 5,
+            duration: random(20, 35) + i * 3,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 1.5,
+            delay: i * random(0.5, 2),
           }}
         >
-          <Leaf className="w-8 h-8 text-primary/20" />
+          <Leaf className="w-6 h-6 md:w-8 md:h-8 text-primary/20" />
         </motion.div>
       ))}
 
-      {/* Orbiting gradient blobs */}
-      {[...Array(5)].map((_, i) => (
+      {/* Floating sparkles with random paths */}
+      {[...Array(12)].map((_, i) => (
         <motion.div
-          key={`orbit-${i}`}
-          className="absolute w-64 h-64 rounded-full orbit-slow pulse-glow"
+          key={`sparkle-${i}`}
+          className="absolute"
           style={{
-            top: `${20 + i * 15}%`,
-            left: `${10 + i * 20}%`,
-            background: `radial-gradient(circle, hsl(var(--primary) / ${0.2 + i * 0.05}), transparent)`,
+            top: `${random(10, 90)}%`,
+            left: `${random(10, 90)}%`,
           }}
           animate={{
-            scale: [1, 1.2, 0.9, 1.1, 1],
-            rotate: [0, 90, 180, 270, 360],
+            y: [0, random(-40, 40), random(-60, 60), random(-40, 40), 0],
+            x: [0, random(-40, 40), random(-60, 60), random(-40, 40), 0],
+            rotate: [0, random(90, 180), random(270, 360), random(90, 180), 0],
+            scale: [0.8, random(1, 1.3), random(0.9, 1.2), random(1, 1.3), 0.8],
+            opacity: [0.2, random(0.4, 0.6), random(0.3, 0.5), random(0.4, 0.6), 0.2],
           }}
           transition={{
-            duration: 20 + i * 10,
+            duration: random(8, 16) + i * 2,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 2,
+            delay: i * random(0.3, 1.5),
+          }}
+        >
+          <Sparkles className="w-4 h-4 text-primary/30" />
+        </motion.div>
+      ))}
+
+      {/* Orbiting gradient blobs with morphing */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={`orbit-${i}`}
+          className="absolute rounded-full"
+          style={{
+            top: `${random(10, 80)}%`,
+            left: `${random(10, 80)}%`,
+            width: `${random(150, 300)}px`,
+            height: `${random(150, 300)}px`,
+            background: `radial-gradient(circle, hsl(var(--primary) / ${random(0.15, 0.25)}), hsl(var(--secondary) / ${random(0.1, 0.2)}), transparent)`,
+            filter: `blur(${random(25, 45)}px)`,
+          }}
+          animate={{
+            scale: [1, random(1.2, 1.5), random(0.9, 1.1), random(1.1, 1.3), 1],
+            rotate: [0, random(60, 120), random(180, 240), random(270, 330), 360],
+            x: [0, random(-50, 50), random(-30, 30), random(-50, 50), 0],
+            y: [0, random(-50, 50), random(-30, 30), random(-50, 50), 0],
+            borderRadius: ['50%', `${random(30, 50)}%`, `${random(40, 60)}%`, `${random(30, 50)}%`, '50%'],
+          }}
+          transition={{
+            duration: random(18, 30) + i * 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * random(1, 3),
           }}
         />
       ))}
 
-      {/* Pulsating rings */}
-      {[...Array(3)].map((_, i) => (
+      {/* Pulsating concentric rings with varied patterns */}
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`ring-${i}`}
           className="absolute"
           style={{
             top: '50%',
             left: '50%',
-            width: `${200 + i * 200}px`,
-            height: `${200 + i * 200}px`,
-            marginLeft: `-${100 + i * 100}px`,
-            marginTop: `-${100 + i * 100}px`,
-            border: `2px solid hsl(var(--primary) / ${0.1 - i * 0.02})`,
+            width: `${180 + i * 180}px`,
+            height: `${180 + i * 180}px`,
+            marginLeft: `-${90 + i * 90}px`,
+            marginTop: `-${90 + i * 90}px`,
+            border: `${random(1, 3)}px solid hsl(var(--primary) / ${random(0.05, 0.15)})`,
             borderRadius: '50%',
           }}
           animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.3, 0.1, 0.3],
-            rotate: [0, 180, 360],
+            scale: [1, random(1.3, 1.6), random(0.9, 1.1), random(1.2, 1.5), 1],
+            opacity: [0.3, random(0.05, 0.15), random(0.2, 0.3), random(0.08, 0.18), 0.3],
+            rotate: [0, random(120, 180), random(240, 300), random(180, 240), 360],
           }}
           transition={{
-            duration: 15 + i * 5,
+            duration: random(12, 20) + i * 4,
             repeat: Infinity,
-            ease: "linear",
-            delay: i * 1,
+            ease: "easeInOut",
+            delay: i * random(0.5, 1.5),
           }}
         />
       ))}
 
-      {/* Floating geometric shapes */}
-      {[...Array(8)].map((_, i) => (
+      {/* Floating geometric shapes with morphing */}
+      {[...Array(10)].map((_, i) => (
         <motion.div
           key={`geo-${i}`}
           className="absolute"
           style={{
-            top: `${10 + i * 12}%`,
-            left: `${5 + i * 11}%`,
-            width: `${30 + i * 10}px`,
-            height: `${30 + i * 10}px`,
-            background: `linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1))`,
+            top: `${random(5, 95)}%`,
+            left: `${random(5, 95)}%`,
+            width: `${random(25, 60)}px`,
+            height: `${random(25, 60)}px`,
+            background: `linear-gradient(${random(0, 360)}deg, hsl(var(--primary) / ${random(0.08, 0.15)}), hsl(var(--secondary) / ${random(0.05, 0.12)}))`,
           }}
           animate={{
-            borderRadius: ['20%', '50%', '30%', '50%', '20%'],
-            rotate: [0, 180, 360, 180, 0],
-            scale: [1, 1.3, 0.8, 1.2, 1],
-            x: [0, 50, -30, 20, 0],
-            y: [0, -40, -80, -40, 0],
+            borderRadius: [
+              `${random(10, 30)}%`,
+              `${random(40, 60)}%`,
+              `${random(20, 40)}%`,
+              `${random(45, 65)}%`,
+              `${random(10, 30)}%`,
+            ],
+            rotate: [0, random(120, 240), random(240, 360), random(120, 240), 0],
+            scale: [1, random(1.2, 1.5), random(0.7, 1), random(1.1, 1.4), 1],
+            x: [0, random(-60, 60), random(-40, 40), random(-50, 50), 0],
+            y: [0, random(-50, 50), random(-80, 80), random(-50, 50), 0],
+            opacity: [random(0.3, 0.5), random(0.2, 0.4), random(0.3, 0.5), random(0.2, 0.4), random(0.3, 0.5)],
           }}
           transition={{
-            duration: 18 + i * 4,
+            duration: random(15, 25) + i * 3,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 0.8,
+            delay: i * random(0.5, 1.5),
           }}
         />
+      ))}
+
+      {/* Floating dots/circles */}
+      {[...Array(15)].map((_, i) => (
+        <motion.div
+          key={`dot-${i}`}
+          className="absolute"
+          style={{
+            top: `${random(0, 100)}%`,
+            left: `${random(0, 100)}%`,
+          }}
+          animate={{
+            y: [0, random(-100, 100), random(-150, 150), random(-100, 100), 0],
+            x: [0, random(-80, 80), random(-120, 120), random(-80, 80), 0],
+            scale: [0.5, random(0.8, 1.2), random(0.6, 1), random(0.9, 1.3), 0.5],
+            opacity: [0.2, random(0.4, 0.6), random(0.3, 0.5), random(0.4, 0.6), 0.2],
+          }}
+          transition={{
+            duration: random(10, 18) + i * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * random(0.2, 1),
+          }}
+        >
+          <Circle className="w-2 h-2 text-primary/40 fill-current" />
+        </motion.div>
       ))}
     </div>
   );

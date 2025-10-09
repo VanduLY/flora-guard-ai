@@ -80,22 +80,22 @@ const Hero = () => {
       >
         <div className="max-w-4xl mx-auto">
           <motion.div 
-            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6"
+            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 float-gentle"
             variants={itemVariants}
           >
-            <Sparkles className="w-4 h-4 text-white" />
+            <Sparkles className="w-4 h-4 text-white float-bob float-delay-1" />
             <span className="text-white text-sm font-medium">AI-Powered Plant Care</span>
           </motion.div>
           
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal"
+            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal float-breathing"
             variants={itemVariants}
           >
             FloraGuard – Your Virtual Plant Caretaker
           </motion.h1>
           
           <motion.p 
-            className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto"
+            className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto float-gentle float-delay-2"
             variants={itemVariants}
           >
             AI-powered plant care made simple, sustainable, and engaging. Never let your green friends down again.

@@ -61,9 +61,9 @@ const Features = () => {
 
   return (
     <section ref={ref} className="py-20 bg-background relative overflow-hidden">
-      {/* Gradient background blob */}
-      <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-breathe" />
-      <div className="absolute bottom-20 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-breathe" style={{ animationDelay: '1s' }} />
+      {/* Gradient background blob with floating */}
+      <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl float-combo-1 float-slow" />
+      <div className="absolute bottom-20 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl float-combo-2 float-glacial float-delay-4" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -95,15 +95,15 @@ const Features = () => {
                 scale: 1.02,
                 transition: { duration: 0.3 } 
               }}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-300 group cursor-pointer glass-morph border border-border/50 feature-card"
+              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-300 group cursor-pointer glass-morph border border-border/50 feature-card float-gentle float-medium"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <motion.div 
-                className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6"
+                className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6 float-breathing"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <feature.icon className="w-7 h-7 text-white" />
+                <feature.icon className="w-7 h-7 text-white float-bob float-delay-1" />
               </motion.div>
               
               <h3 className="text-xl font-bold text-foreground mb-3">

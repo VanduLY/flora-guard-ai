@@ -66,10 +66,10 @@ const TechStack = () => {
 
   return (
     <section ref={ref} className="py-20 bg-background relative overflow-hidden">
-      {/* Animated gradient mesh background */}
+      {/* Animated gradient mesh background with floating */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-10 right-10 w-96 h-96 gradient-mesh rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 gradient-mesh rounded-full blur-3xl" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-10 right-10 w-96 h-96 gradient-mesh rounded-full blur-3xl float-drift float-glacial" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 gradient-mesh rounded-full blur-3xl float-sway float-slow float-delay-5" />
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -80,12 +80,12 @@ const TechStack = () => {
           transition={{ duration: 0.6 }}
         >
           <motion.div 
-            className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6"
+            className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6 float-breathing"
             initial={{ scale: 0, rotate: -180 }}
             animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
             transition={{ duration: 0.6, type: "spring" }}
           >
-            <Code2 className="w-8 h-8 text-primary" />
+            <Code2 className="w-8 h-8 text-primary float-bob float-delay-2" />
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -111,7 +111,8 @@ const TechStack = () => {
                 scale: 1.02,
                 transition: { duration: 0.3 } 
               }}
-              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 cursor-pointer glass-morph border border-border/30 group"
+              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 cursor-pointer glass-morph border border-border/30 group float-wave float-medium"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
               <motion.div 
                 className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4 group-hover:h-1.5 transition-all duration-300`}

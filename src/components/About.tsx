@@ -9,9 +9,9 @@ const About = () => {
 
   return (
     <section id="about" ref={ref} className="py-20 bg-gradient-soft relative overflow-hidden">
-      {/* Animated gradient orbs */}
-      <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-float-slow" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
+      {/* Animated gradient orbs with perpetual floating */}
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl float-sway float-slow" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl float-drift float-glacial float-delay-3" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -22,12 +22,12 @@ const About = () => {
         >
           <div className="text-center mb-12">
             <motion.div 
-              className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6"
+              className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6 float-breathing"
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : { scale: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Sparkles className="w-8 h-8 text-primary" />
+              <Sparkles className="w-8 h-8 text-primary float-bob float-delay-2" />
             </motion.div>
             
             <motion.h2 
@@ -41,14 +41,14 @@ const About = () => {
           </div>
 
           <motion.div 
-            className="bg-card rounded-2xl p-8 md:p-12 shadow-large glass-morph border border-border/30"
+            className="bg-card rounded-2xl p-8 md:p-12 shadow-large glass-morph border border-border/30 float-gentle float-slow"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
           >
             <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center float-bob float-delay-1">
                 <AlertCircle className="w-6 h-6 text-destructive" />
               </div>
               <div>
@@ -64,7 +64,7 @@ const About = () => {
             <div className="h-px bg-border my-8" />
 
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center float-bob float-delay-3">
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div>

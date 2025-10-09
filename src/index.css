@@ -340,4 +340,172 @@ All colors MUST be HSL.
     z-index: 0;
     overflow: hidden;
   }
+
+  /* Perpetual Floating Animations */
+  @keyframes float-gentle {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(5px, -8px, 0) rotate(1deg);
+    }
+    50% {
+      transform: translate3d(0, -15px, 0) rotate(0deg);
+    }
+    75% {
+      transform: translate3d(-5px, -8px, 0) rotate(-1deg);
+    }
+  }
+
+  @keyframes float-sway {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(15px, -10px, 0) rotate(2deg);
+    }
+    50% {
+      transform: translate3d(30px, -5px, 0) rotate(0deg);
+    }
+    75% {
+      transform: translate3d(15px, -10px, 0) rotate(-2deg);
+    }
+  }
+
+  @keyframes float-breathing {
+    0%, 100% {
+      transform: scale3d(1, 1, 1);
+    }
+    50% {
+      transform: scale3d(1.02, 1.02, 1);
+    }
+  }
+
+  @keyframes float-bob {
+    0%, 100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -12px, 0);
+    }
+  }
+
+  @keyframes float-orbital {
+    0% {
+      transform: rotate(0deg) translateX(20px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(20px) rotate(-360deg);
+    }
+  }
+
+  @keyframes float-drift {
+    0% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate3d(10px, -5px, 0) rotate(2deg);
+    }
+    50% {
+      transform: translate3d(5px, -15px, 0) rotate(-1deg);
+    }
+    75% {
+      transform: translate3d(-5px, -10px, 0) rotate(1deg);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+  }
+
+  @keyframes float-wave {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+      transform: translate3d(8px, -6px, 0) rotate(1.5deg) scale(1.01);
+    }
+    66% {
+      transform: translate3d(-8px, -12px, 0) rotate(-1.5deg) scale(0.99);
+    }
+  }
+
+  /* Floating Classes */
+  .float-gentle {
+    animation: float-gentle 4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .float-sway {
+    animation: float-sway 8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .float-breathing {
+    animation: float-breathing 3s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .float-bob {
+    animation: float-bob 3s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .float-orbital {
+    animation: float-orbital 12s linear infinite;
+    will-change: transform;
+  }
+
+  .float-drift {
+    animation: float-drift 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .float-wave {
+    animation: float-wave 5s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* Delay variations for non-synchronized movement */
+  .float-delay-1 { animation-delay: 0.5s; }
+  .float-delay-2 { animation-delay: 1s; }
+  .float-delay-3 { animation-delay: 1.5s; }
+  .float-delay-4 { animation-delay: 2s; }
+  .float-delay-5 { animation-delay: 2.5s; }
+  .float-delay-6 { animation-delay: 3s; }
+
+  /* Duration variations */
+  .float-fast { animation-duration: 3s; }
+  .float-medium { animation-duration: 5s; }
+  .float-slow { animation-duration: 8s; }
+  .float-glacial { animation-duration: 12s; }
+
+  /* Combined floating effects */
+  .float-combo-1 {
+    animation: float-gentle 4s ease-in-out infinite, float-breathing 3s ease-in-out infinite;
+  }
+
+  .float-combo-2 {
+    animation: float-wave 5s ease-in-out infinite, float-breathing 4s ease-in-out infinite;
+  }
+
+  /* Morphing gradient background */
+  @keyframes gradient-morph {
+    0%, 100% {
+      background-position: 0% 50%;
+      filter: hue-rotate(0deg);
+    }
+    50% {
+      background-position: 100% 50%;
+      filter: hue-rotate(30deg);
+    }
+  }
+
+  .gradient-morph {
+    background: linear-gradient(45deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--secondary)) 50%, 
+      hsl(var(--primary)) 100%);
+    background-size: 200% 200%;
+    animation: gradient-morph 15s ease infinite;
+  }
 }
