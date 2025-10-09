@@ -281,4 +281,63 @@ All colors MUST be HSL.
   .hypnotic-spinner {
     animation: spin-morph 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
   }
+
+  /* Independent background animations that run constantly */
+  @keyframes drift-particles {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+      transform: translate(30px, -50px) rotate(90deg);
+    }
+    50% {
+      transform: translate(-20px, -100px) rotate(180deg);
+    }
+    75% {
+      transform: translate(-50px, -50px) rotate(270deg);
+    }
+  }
+
+  @keyframes orbit-slow {
+    0% {
+      transform: rotate(0deg) translateX(100px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(100px) rotate(-360deg);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.3;
+      filter: blur(20px);
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      filter: blur(30px);
+      transform: scale(1.2);
+    }
+  }
+
+  .drift-particles {
+    animation: drift-particles 20s ease-in-out infinite;
+  }
+
+  .orbit-slow {
+    animation: orbit-slow 30s linear infinite;
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  /* Always-active background layer */
+  .perpetual-motion-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
 }

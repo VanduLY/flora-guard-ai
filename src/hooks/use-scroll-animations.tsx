@@ -83,39 +83,66 @@ export const useStaggeredReveal = (
 
     const { stagger = 0.15, duration = 0.8, ease = 'back.out(1.7)' } = options;
 
-    gsap.fromTo(
-      elements,
-      {
+    elements.forEach((element, index) => {
+      ScrollTrigger.create({
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play reverse play reverse',
+        onEnter: () => {
+          gsap.to(element, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationX: 0,
+            duration,
+            ease,
+            delay: index * stagger,
+          });
+        },
+        onLeave: () => {
+          gsap.to(element, {
+            opacity: 0,
+            y: -50,
+            scale: 0.95,
+            duration: duration * 0.6,
+            ease: 'power2.in',
+          });
+        },
+        onEnterBack: () => {
+          gsap.to(element, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationX: 0,
+            duration,
+            ease,
+            delay: index * stagger,
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(element, {
+            opacity: 0,
+            y: 100,
+            scale: 0.8,
+            rotationX: -20,
+            duration: duration * 0.6,
+            ease: 'power2.in',
+          });
+        },
+      });
+      
+      // Set initial state
+      gsap.set(element, {
         opacity: 0,
         y: 100,
         scale: 0.8,
         rotationX: -20,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        rotationX: 0,
-        duration,
-        ease,
-        stagger: {
-          each: stagger,
-          from: 'start',
-        },
-        scrollTrigger: {
-          trigger: elements[0],
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
+      });
+    });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.vars.trigger === elements[0]) {
-          trigger.kill();
-        }
-      });
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, [selector, options.stagger, options.duration, options.ease]);
 };
@@ -130,24 +157,57 @@ export const useTextGradientReveal = (selector: string) => {
       element.innerHTML = words
         .map(
           (word) =>
-            `<span class="inline-block" style="opacity: 0; transform: translateY(20px);">${word}</span>`
+            `<span class="inline-block">${word}</span>`
         )
         .join(' ');
 
       const wordElements = element.querySelectorAll('span');
 
-      gsap.to(wordElements, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'power3.out',
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: element,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
+      ScrollTrigger.create({
+        trigger: element,
+        start: 'top 85%',
+        end: 'bottom 15%',
+        toggleActions: 'play reverse play reverse',
+        onEnter: () => {
+          gsap.to(wordElements, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power3.out',
+            stagger: 0.05,
+          });
+        },
+        onLeave: () => {
+          gsap.to(wordElements, {
+            opacity: 0,
+            y: -20,
+            duration: 0.4,
+            ease: 'power2.in',
+            stagger: 0.03,
+          });
+        },
+        onEnterBack: () => {
+          gsap.to(wordElements, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power3.out',
+            stagger: 0.05,
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(wordElements, {
+            opacity: 0,
+            y: 20,
+            duration: 0.4,
+            ease: 'power2.in',
+            stagger: 0.03,
+          });
         },
       });
+
+      // Set initial state
+      gsap.set(wordElements, { opacity: 0, y: 20 });
     });
 
     return () => {
@@ -162,24 +222,26 @@ export const useMorphingShapes = (selector: string) => {
     if (!elements.length) return;
 
     elements.forEach((element) => {
-      const tl = gsap.timeline({
+      gsap.timeline({
         scrollTrigger: {
           trigger: element,
           start: 'top 75%',
           end: 'bottom 25%',
           scrub: 1,
+          toggleActions: 'play reverse play reverse',
         },
-      });
-
-      tl.fromTo(
+      })
+      .fromTo(
         element,
-        { borderRadius: '50%', rotation: 0, scale: 0.5 },
-        { borderRadius: '0%', rotation: 180, scale: 1, duration: 1 }
-      ).to(element, {
+        { borderRadius: '50%', rotation: 0, scale: 0.5, opacity: 0.5 },
+        { borderRadius: '0%', rotation: 180, scale: 1, opacity: 1, duration: 0.5 }
+      )
+      .to(element, {
         borderRadius: '30%',
         rotation: 360,
         scale: 1.1,
-        duration: 1,
+        opacity: 0.8,
+        duration: 0.5,
       });
     });
 
@@ -197,25 +259,53 @@ export const useScrollUpAnimation = (selector: string) => {
     elements.forEach((element) => {
       ScrollTrigger.create({
         trigger: element,
-        start: 'top bottom',
-        end: 'top top',
+        start: 'top 85%',
+        end: 'bottom 15%',
+        toggleActions: 'play reverse play reverse',
         onEnter: () => {
-          gsap.fromTo(
-            element,
-            { opacity: 0, y: 100, scale: 0.9 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.7)' }
-          );
+          gsap.to(element, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationY: 0,
+            duration: 0.8,
+            ease: 'back.out(1.7)',
+          });
         },
-        onLeaveBack: () => {
+        onLeave: () => {
           gsap.to(element, {
             opacity: 0,
             y: -50,
             scale: 0.95,
+            rotationY: -15,
+            duration: 0.5,
+            ease: 'power2.in',
+          });
+        },
+        onEnterBack: () => {
+          gsap.to(element, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationY: 0,
+            duration: 0.8,
+            ease: 'back.out(1.7)',
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(element, {
+            opacity: 0,
+            y: 100,
+            scale: 0.9,
+            rotationY: 15,
             duration: 0.5,
             ease: 'power2.in',
           });
         },
       });
+
+      // Set initial state
+      gsap.set(element, { opacity: 0, y: 100, scale: 0.9, rotationY: 15 });
     });
 
     return () => {
@@ -270,24 +360,109 @@ export const useGradientBloom = (selector: string) => {
     if (!elements.length) return;
 
     elements.forEach((element) => {
-      gsap.fromTo(
-        element,
-        {
-          opacity: 0,
-          backgroundSize: '0% 100%',
+      ScrollTrigger.create({
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play reverse play reverse',
+        onEnter: () => {
+          gsap.to(element, {
+            opacity: 1,
+            backgroundSize: '200% 200%',
+            duration: 1.5,
+            ease: 'power2.out',
+          });
         },
-        {
-          opacity: 1,
-          backgroundSize: '100% 100%',
-          duration: 1.5,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: element,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
+        onLeave: () => {
+          gsap.to(element, {
+            opacity: 0.3,
+            backgroundSize: '100% 100%',
+            duration: 0.8,
+            ease: 'power2.in',
+          });
+        },
+        onEnterBack: () => {
+          gsap.to(element, {
+            opacity: 1,
+            backgroundSize: '200% 200%',
+            duration: 1.5,
+            ease: 'power2.out',
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(element, {
+            opacity: 0,
+            backgroundSize: '0% 100%',
+            duration: 0.8,
+            ease: 'power2.in',
+          });
+        },
+      });
+
+      // Set initial state
+      gsap.set(element, { opacity: 0, backgroundSize: '0% 100%' });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, [selector]);
+};
+
+// New hook for perpetual rotation based on scroll velocity
+export const useScrollVelocityRotation = (selector: string) => {
+  useEffect(() => {
+    const elements = document.querySelectorAll(selector);
+    if (!elements.length) return;
+
+    elements.forEach((element) => {
+      let rotation = 0;
+      
+      ScrollTrigger.create({
+        trigger: element,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const velocity = self.getVelocity() / 100;
+          rotation += velocity;
+          gsap.to(element, {
+            rotation: rotation,
+            duration: 0.3,
+            ease: 'none',
+          });
+        },
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, [selector]);
+};
+
+// New hook for scale pulsation based on scroll momentum
+export const useScrollMomentumScale = (selector: string) => {
+  useEffect(() => {
+    const elements = document.querySelectorAll(selector);
+    if (!elements.length) return;
+
+    elements.forEach((element) => {
+      ScrollTrigger.create({
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const scale = 0.8 + Math.sin(progress * Math.PI) * 0.4;
+          gsap.to(element, {
+            scale: scale,
+            duration: 0.1,
+            ease: 'none',
+          });
+        },
+      });
     });
 
     return () => {

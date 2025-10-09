@@ -10,6 +10,7 @@ import TechStack from "@/components/TechStack";
 import Comparison from "@/components/Comparison";
 import Conclusion from "@/components/Conclusion";
 import Footer from "@/components/Footer";
+import PerpetualBackground from "@/components/PerpetualBackground";
 import { useScrollAnimations, useMagneticEffect } from "@/hooks/use-scroll-animations";
 import { useEffect } from "react";
 
@@ -32,7 +33,8 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <PerpetualBackground />
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2 glass-morph p-2 rounded-lg">
         <ThemeToggle />
         <Button onClick={() => navigate("/login")} size="lg" className="magnetic-btn">
@@ -40,14 +42,16 @@ const Index = () => {
           Sign In
         </Button>
       </div>
-      <Hero />
-      <About />
-      <Features />
-      <Methodology />
-      <TechStack />
-      <Comparison />
-      <Conclusion />
-      <Footer />
+      <div className="relative z-10">
+        <Hero />
+        <About />
+        <Features />
+        <Methodology />
+        <TechStack />
+        <Comparison />
+        <Conclusion />
+        <Footer />
+      </div>
     </div>
   );
 };
