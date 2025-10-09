@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Leaf } from "lucide-react";
 import heroImage from "@/assets/hero-plants.jpg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -45,27 +45,30 @@ const Hero = () => {
       
       {/* Floating leaf particles with parallax */}
       <div className="absolute inset-0 z-0 overflow-hidden parallax-fast">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-20 h-20 bg-white/10 rounded-full blur-xl animate-breathe"
+            className="absolute"
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, -30, 0],
-              x: [0, 15, 0],
-              scale: [1, 1.1, 1],
-              opacity: [0.3, 0.6, 0.3],
+              y: [0, -50, 0],
+              x: [0, 20, 0],
+              rotate: [0, 360, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.5, 0.2],
             }}
             transition={{
-              duration: 10 + i * 2,
+              duration: 15 + i * 3,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 0.5,
+              delay: i * 0.7,
             }}
-          />
+          >
+            <Leaf className="w-12 h-12 text-white/30" />
+          </motion.div>
         ))}
       </div>
 
@@ -123,15 +126,20 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator - Leaf */}
       <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        animate={{ 
+          y: [0, 15, 0],
+          rotate: [0, 5, -5, 0]
+        }}
+        transition={{ 
+          duration: 3, 
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
       >
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2 animate-pulse" />
-        </div>
+        <Leaf className="w-8 h-8 text-white/70" />
       </motion.div>
     </section>
   );
