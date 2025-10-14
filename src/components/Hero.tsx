@@ -3,9 +3,17 @@ import { ArrowRight, Sparkles, Leaf } from "lucide-react";
 import heroImage from "@/assets/hero-plants.jpg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useDepthFloating, useMicroBreathing, useLiquidIconFloat } from "@/hooks/use-cinematic-float";
 
 const Hero = () => {
   const navigate = useNavigate();
+  
+  // Apply cinematic floating animations
+  useDepthFloating('.hero-title', 'foreground');
+  useDepthFloating('.hero-subtitle', 'midground');
+  useDepthFloating('.hero-badge', 'background');
+  useMicroBreathing('.hero-button');
+  useLiquidIconFloat('.hero-icon');
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,22 +88,22 @@ const Hero = () => {
       >
         <div className="max-w-4xl mx-auto">
           <motion.div 
-            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 float-gentle"
+            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 cinematic-float hero-badge"
             variants={itemVariants}
           >
-            <Sparkles className="w-4 h-4 text-white float-bob float-delay-1" />
+            <Sparkles className="w-4 h-4 text-white hero-icon" />
             <span className="text-white text-sm font-medium">AI-Powered Plant Care</span>
           </motion.div>
           
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal float-breathing"
+            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal cinematic-float depth-layer-2 hero-title"
             variants={itemVariants}
           >
             FloraGuard – Your Virtual Plant Caretaker
           </motion.h1>
           
           <motion.p 
-            className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto float-gentle float-delay-2"
+            className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto cinematic-float depth-layer-1 hero-subtitle"
             variants={itemVariants}
           >
             AI-powered plant care made simple, sustainable, and engaging. Never let your green friends down again.
@@ -108,16 +116,16 @@ const Hero = () => {
             <Button 
               size="lg" 
               variant="hero"
-              className="group magnetic-btn"
+              className="group cinematic-float hero-button"
               onClick={() => navigate("/detect")}
             >
               Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform hero-icon" />
             </Button>
             <Button 
               size="lg" 
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary magnetic-btn"
+              className="border-white text-white hover:bg-white hover:text-primary cinematic-float hero-button"
               onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Learn More

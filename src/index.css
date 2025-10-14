@@ -509,3 +509,33 @@ All colors MUST be HSL.
     animation: gradient-morph 15s ease infinite;
   }
 }
+
+@layer utilities {
+  /* Premium floating performance optimization */
+  .cinematic-float {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+  
+  .depth-layer-1 {
+    transform: translateZ(10px);
+  }
+  
+  .depth-layer-2 {
+    transform: translateZ(20px);
+  }
+  
+  .depth-layer-3 {
+    transform: translateZ(30px);
+  }
+  
+  .parallax-slow {
+    transform: translateZ(-1px) scale(1.1);
+  }
+  
+  .parallax-fast {
+    transform: translateZ(0.5px);
+  }
+}

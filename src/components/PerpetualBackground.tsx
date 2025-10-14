@@ -1,8 +1,15 @@
 import { Leaf, Sparkles, Circle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useEllipticalFloat } from "@/hooks/use-cinematic-float";
 
 const PerpetualBackground = () => {
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
+  // Apply cinematic elliptical floating to background elements
+  useEffect(() => {
+    useEllipticalFloat('.bg-elliptical');
+  }, []);
 
   return (
     <div className="perpetual-motion-bg">
@@ -60,31 +67,29 @@ const PerpetualBackground = () => {
         </motion.div>
       ))}
 
-      {/* Orbiting gradient blobs with morphing */}
+      {/* Orbiting gradient blobs with morphing - Elliptical paths */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={`orbit-${i}`}
-          className="absolute rounded-full"
+          className="absolute rounded-full bg-elliptical cinematic-float"
           style={{
             top: `${random(10, 80)}%`,
             left: `${random(10, 80)}%`,
             width: `${random(150, 300)}px`,
             height: `${random(150, 300)}px`,
-            background: `radial-gradient(circle, hsl(var(--primary) / ${random(0.15, 0.25)}), hsl(var(--secondary) / ${random(0.1, 0.2)}), transparent)`,
-            filter: `blur(${random(25, 45)}px)`,
+            background: `radial-gradient(circle, hsl(var(--primary) / ${random(0.08, 0.15)}), hsl(var(--secondary) / ${random(0.05, 0.1)}), transparent)`,
+            filter: `blur(${random(35, 50)}px)`,
           }}
           animate={{
-            scale: [1, random(1.2, 1.5), random(0.9, 1.1), random(1.1, 1.3), 1],
-            rotate: [0, random(60, 120), random(180, 240), random(270, 330), 360],
-            x: [0, random(-50, 50), random(-30, 30), random(-50, 50), 0],
-            y: [0, random(-50, 50), random(-30, 30), random(-50, 50), 0],
-            borderRadius: ['50%', `${random(30, 50)}%`, `${random(40, 60)}%`, `${random(30, 50)}%`, '50%'],
+            scale: [1, random(1.05, 1.15), random(0.95, 1.05), random(1.02, 1.12), 1],
+            opacity: [0.4, random(0.5, 0.7), random(0.3, 0.5), random(0.5, 0.7), 0.4],
+            borderRadius: ['50%', `${random(45, 55)}%`, `${random(40, 60)}%`, `${random(45, 55)}%`, '50%'],
           }}
           transition={{
-            duration: random(18, 30) + i * 5,
+            duration: random(40, 60),
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * random(1, 3),
+            ease: [0.25, 0.46, 0.45, 0.94],
+            delay: i * random(2, 5),
           }}
         />
       ))}
