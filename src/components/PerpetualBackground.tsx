@@ -1,15 +1,12 @@
 import { Leaf, Sparkles, Circle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
 import { useEllipticalFloat } from "@/hooks/use-cinematic-float";
 
 const PerpetualBackground = () => {
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
-  // Apply cinematic elliptical floating to background elements
-  useEffect(() => {
-    useEllipticalFloat('.bg-elliptical');
-  }, []);
+  // Apply cinematic elliptical floating to background elements - must be at top level
+  useEllipticalFloat('.bg-elliptical');
 
   return (
     <div className="perpetual-motion-bg">
