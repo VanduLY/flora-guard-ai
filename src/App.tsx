@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import PlantDetection from "./pages/PlantDetection";
+import ScanDetail from "./pages/ScanDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/detect" element={<PlantDetection />} />
+            <Route path="/scan/:id" element={<ScanDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

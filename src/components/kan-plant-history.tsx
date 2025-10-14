@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Loader2, Calendar, Leaf, AlertTriangle, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ interface PlantScan {
 }
 
 const KanPlantHistory = () => {
+  const navigate = useNavigate();
   const [scans, setScans] = useState<PlantScan[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -100,7 +102,8 @@ const KanPlantHistory = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="flex gap-4 p-4 bg-background rounded-xl hover:shadow-soft transition-shadow"
+            onClick={() => navigate(`/scan/${scan.id}`)}
+            className="flex gap-4 p-4 bg-background rounded-xl hover:shadow-soft transition-all cursor-pointer hover:bg-accent/50 hover:scale-[1.01]"
           >
             <img
               src={scan.image_url}

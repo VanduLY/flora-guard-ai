@@ -152,34 +152,36 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
       )}
 
       {/* Recommendations */}
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="recommendations">
-          <AccordionTrigger className="text-foreground font-semibold">
-            <div className="flex items-center gap-2">
-              <Droplet className="w-5 h-5 text-primary" />
-              Treatment & Care Recommendations
-            </div>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-3 pt-2">
-              {result.recommendations.map((recommendation, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg"
-                >
-                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <p className="text-muted-foreground">{recommendation}</p>
-                </motion.div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {result.recommendations && result.recommendations.length > 0 && (
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="recommendations">
+            <AccordionTrigger className="text-foreground font-semibold">
+              <div className="flex items-center gap-2">
+                <Droplet className="w-5 h-5 text-primary" />
+                Treatment & Care Recommendations
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-3 pt-2">
+                {result.recommendations.map((recommendation, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg"
+                  >
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold">
+                      {index + 1}
+                    </div>
+                    <p className="text-muted-foreground">{recommendation}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
     </motion.div>
   );
 };
