@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Upload, Camera, History, Cloud } from "lucide-react";
+import { Upload, Camera, History, LogOut, Home } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import KanUploadZone from "./kan-upload-zone";
 import KanCameraFeed from "./kan-camera-feed";
 import KanDiseaseResults from "./kan-disease-results";
@@ -10,9 +13,20 @@ import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 const KanApp = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"upload" | "camera" | "history">("upload");
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully",
+    });
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background">
@@ -26,19 +40,41 @@ const KanApp = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <motion.div 
-              className="flex items-center gap-3"
+              className="flex items-center gap-3 cursor-pointer"
               whileHover={{ scale: 1.05 }}
+              onClick={() => navigate("/detect")}
             >
-              <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+              <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/favicon.ico" 
+                  alt="Flora Guard Logo" 
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Flora Guard AI</h1>
                 <p className="text-sm text-muted-foreground">AI-Powered Plant Protection</p>
               </div>
             </motion.div>
+            
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => navigate("/")} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Home className="w-4 h-4" />
+                Home
+              </Button>
+              <Button 
+                onClick={handleSignOut} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </motion.header>
