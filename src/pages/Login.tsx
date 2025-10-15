@@ -44,9 +44,9 @@ const Login = () => {
 
         toast({
           title: "Welcome back!",
-          description: "Redirecting to plant detection system...",
+          description: "Redirecting to dashboard...",
         });
-        navigate("/detect");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast({

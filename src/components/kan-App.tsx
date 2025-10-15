@@ -59,12 +59,12 @@ const KanApp = () => {
             
             <div className="flex items-center gap-2">
               <Button 
-                onClick={() => navigate("/")} 
+                onClick={() => navigate("/dashboard")} 
                 variant="outline"
                 className="flex items-center gap-2"
               >
                 <Home className="w-4 h-4" />
-                Home
+                Dashboard
               </Button>
               <Button 
                 onClick={handleSignOut} 
