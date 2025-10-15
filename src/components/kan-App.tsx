@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload, Camera, History, LogOut, Home } from "lucide-react";
+import { Upload, Camera, History, LogOut, Home, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,6 +65,14 @@ const KanApp = () => {
               >
                 <Home className="w-4 h-4" />
                 Dashboard
+              </Button>
+              <Button 
+                onClick={() => navigate("/profile")} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Profile
               </Button>
               <Button 
                 onClick={handleSignOut} 

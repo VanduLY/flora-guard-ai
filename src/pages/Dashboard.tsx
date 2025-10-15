@@ -116,10 +116,16 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">Plant Care Dashboard</p>
               </div>
             </div>
-            <Button onClick={handleSignOut} variant="outline">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => navigate("/profile")} variant="outline">
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Button>
+              <Button onClick={handleSignOut} variant="outline">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
