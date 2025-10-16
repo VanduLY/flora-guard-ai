@@ -8,10 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@/contexts/UserContext";
+import { compressImage } from "@/lib/imageCompression";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user: authUser, profile: userProfile, updateProfile: updateGlobalProfile, refreshProfile } = useUser();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState({
@@ -28,37 +31,21 @@ const Profile = () => {
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [authUser, userProfile]);
 
   const loadProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Error loading profile:", error);
-        return;
-      }
-
-      setProfile({
-        username: data?.username || "",
-        full_name: data?.full_name || "",
-        email: user.email || "",
-        avatar_url: data?.avatar_url || "",
-        location: data?.location || "",
-      });
-    } catch (error) {
-      console.error("Error:", error);
+    if (!authUser) {
+      navigate("/login");
+      return;
     }
+
+    setProfile({
+      username: userProfile?.username || "",
+      full_name: userProfile?.full_name || "",
+      email: authUser.email || "",
+      avatar_url: userProfile?.avatar_url || "",
+      location: userProfile?.location || "",
+    });
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +63,20 @@ const Profile = () => {
         return;
       }
 
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
+      // Validate file size (max 5MB before compression)
+      if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "File too large",
-          description: "Please upload an image smaller than 2MB",
+          description: "Please upload an image smaller than 5MB",
           variant: "destructive",
         });
         return;
       }
 
       setUploading(true);
+
+      // Compress image before upload
+      const compressedFile = await compressImage(file, 2);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -102,13 +92,13 @@ const Profile = () => {
       }
 
       // Upload new avatar
-      const fileExt = file.name.split(".").pop();
+      const fileExt = compressedFile.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, compressedFile);
 
       if (uploadError) throw uploadError;
 
@@ -125,7 +115,11 @@ const Profile = () => {
 
       if (updateError) throw updateError;
 
+      // Update local state
       setProfile({ ...profile, avatar_url: publicUrl });
+      
+      // Update global context for immediate UI update across all pages
+      updateGlobalProfile({ avatar_url: publicUrl });
 
       toast({
         title: "Success",
@@ -164,7 +158,11 @@ const Profile = () => {
 
       if (error) throw error;
 
+      // Update local state
       setProfile({ ...profile, avatar_url: "" });
+      
+      // Update global context
+      updateGlobalProfile({ avatar_url: null });
 
       toast({
         title: "Success",
@@ -207,6 +205,13 @@ const Profile = () => {
         .eq("user_id", user.id);
 
       if (profileError) throw profileError;
+
+      // Update global context for immediate UI update
+      updateGlobalProfile({
+        username: profile.username,
+        full_name: profile.full_name,
+        location: profile.location,
+      });
 
       toast({
         title: "Success",
@@ -300,48 +305,53 @@ const Profile = () => {
 
           {/* Avatar Section */}
           <Card className="p-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border-4 border-primary/20">
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative group">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border-4 border-primary/20 transition-all group-hover:border-primary/40">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-16 h-16 text-primary" />
+                    )}
+                  </div>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full cursor-pointer hover:bg-primary/90 transition-all shadow-lg hover:scale-110"
+                  >
+                    {uploading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Camera className="w-5 h-5" />
+                    )}
+                    <input
+                      id="avatar-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                      disabled={uploading}
                     />
-                  ) : (
-                    <User className="w-16 h-16 text-primary" />
+                  </label>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Click camera icon to upload or change photo
+                  </p>
+                  {profile.avatar_url && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRemoveAvatar}
+                    >
+                      Remove Photo
+                    </Button>
                   )}
                 </div>
-                <label
-                  htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-2 rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-                >
-                  {uploading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Camera className="w-5 h-5" />
-                  )}
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
               </div>
-              {profile.avatar_url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRemoveAvatar}
-                >
-                  Remove Photo
-                </Button>
-              )}
-            </div>
           </Card>
 
           {/* Profile Information */}

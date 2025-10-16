@@ -146,6 +146,9 @@ const KanPlantHistory = () => {
 
   const handleDelete = async (scanId: string) => {
     try {
+      // Store deleted scan for undo functionality
+      const deletedScan = scans.find(s => s.id === scanId);
+      
       const { error } = await supabase
         .from("plant_scans")
         .delete()
@@ -154,9 +157,10 @@ const KanPlantHistory = () => {
       if (error) throw error;
 
       setScans(prev => prev.filter(s => s.id !== scanId));
+      
       toast({
-        title: "Success",
-        description: "Scan deleted successfully",
+        title: "Scan deleted",
+        description: "The scan has been permanently deleted",
       });
     } catch (error: any) {
       console.error("Error deleting scan:", error);
@@ -204,6 +208,16 @@ const KanPlantHistory = () => {
     }
 
     try {
+      // Store old name for potential revert
+      const scanToUpdate = scans.find(s => s.id === scanId);
+      const oldName = scanToUpdate?.custom_name;
+      
+      // Optimistic update
+      setScans(prev => prev.map(s => 
+        s.id === scanId ? { ...s, custom_name: newName.trim() } : s
+      ));
+      setEditingId(null);
+
       const { error } = await supabase
         .from("plant_scans")
         .update({ custom_name: newName.trim() })
@@ -211,16 +225,21 @@ const KanPlantHistory = () => {
 
       if (error) throw error;
 
-      setScans(prev => prev.map(s => 
-        s.id === scanId ? { ...s, custom_name: newName.trim() } : s
-      ));
-      setEditingId(null);
       toast({
-        title: "Success",
-        description: "Plant renamed successfully",
+        title: "Plant renamed",
+        description: `Successfully renamed to "${newName.trim()}"`,
       });
     } catch (error: any) {
       console.error("Error renaming scan:", error);
+      
+      // Revert on error
+      const scanToRevert = scans.find(s => s.id === scanId);
+      if (scanToRevert) {
+        setScans(prev => prev.map(s => 
+          s.id === scanId ? { ...s, custom_name: scanToRevert.custom_name } : s
+        ));
+      }
+      
       toast({
         title: "Error",
         description: "Failed to rename plant",
@@ -231,6 +250,12 @@ const KanPlantHistory = () => {
 
   const handleToggleFavorite = async (scanId: string, currentFavorite: boolean) => {
     try {
+      // Optimistic update - update UI immediately
+      setScans(prev => prev.map(s => 
+        s.id === scanId ? { ...s, is_favorite: !currentFavorite } : s
+      ));
+
+      // Then update database
       const { error } = await supabase
         .from("plant_scans")
         .update({ is_favorite: !currentFavorite })
@@ -238,14 +263,18 @@ const KanPlantHistory = () => {
 
       if (error) throw error;
 
-      setScans(prev => prev.map(s => 
-        s.id === scanId ? { ...s, is_favorite: !currentFavorite } : s
-      ));
       toast({
         title: currentFavorite ? "Removed from favorites" : "Added to favorites",
+        description: currentFavorite ? "Plant removed from your favorites" : "Plant added to your favorites",
       });
     } catch (error: any) {
       console.error("Error toggling favorite:", error);
+      
+      // Revert optimistic update on error
+      setScans(prev => prev.map(s => 
+        s.id === scanId ? { ...s, is_favorite: currentFavorite } : s
+      ));
+      
       toast({
         title: "Error",
         description: "Failed to update favorite status",
@@ -499,9 +528,9 @@ const KanPlantHistory = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleToggleFavorite(scan.id, scan.is_favorite || false)}
-                          className={scan.is_favorite ? "text-yellow-500" : "text-muted-foreground"}
+                          className={`transition-all ${scan.is_favorite ? "text-yellow-500 hover:text-yellow-600" : "text-muted-foreground hover:text-yellow-500"}`}
                         >
-                          <Star className={`w-4 h-4 ${scan.is_favorite ? "fill-current" : ""}`} />
+                          <Star className={`w-5 h-5 transition-all ${scan.is_favorite ? "fill-yellow-500" : ""}`} />
                         </Button>
                         
                         <div className="text-sm text-muted-foreground flex items-center gap-1">

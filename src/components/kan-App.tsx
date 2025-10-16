@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/contexts/UserContext";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import KanUploadZone from "./kan-upload-zone";
 import KanCameraFeed from "./kan-camera-feed";
 import KanDiseaseResults from "./kan-disease-results";
@@ -15,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 const KanApp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useUser();
   const [activeTab, setActiveTab] = useState<"upload" | "camera" | "history">("upload");
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -64,23 +67,35 @@ const KanApp = () => {
                 className="flex items-center gap-2"
               >
                 <Home className="w-4 h-4" />
-                Dashboard
+                <span className="hidden sm:inline">Dashboard</span>
               </Button>
+              
+              {/* Profile Avatar Button */}
               <Button 
                 onClick={() => navigate("/profile")} 
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 px-2 pr-3"
               >
-                <User className="w-4 h-4" />
-                Profile
+                <Avatar className="w-8 h-8">
+                  {profile?.avatar_url ? (
+                    <AvatarImage src={profile.avatar_url} alt={profile.username || "User"} />
+                  ) : null}
+                  <AvatarFallback className="bg-primary/10">
+                    <User className="w-4 h-4 text-primary" />
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden sm:inline">
+                  {profile?.username || "Profile"}
+                </span>
               </Button>
+              
               <Button 
                 onClick={handleSignOut} 
                 variant="outline"
                 className="flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>

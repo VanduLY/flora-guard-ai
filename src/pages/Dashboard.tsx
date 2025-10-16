@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Camera, History, BookOpen, Activity, Leaf, Heart, AlertCircle, Scan, LogOut, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/contexts/UserContext";
 import PerpetualBackground from "@/components/PerpetualBackground";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useUser();
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [stats, setStats] = useState({
@@ -22,7 +25,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     checkAuthAndLoadData();
-  }, []);
+  }, [profile]);
 
   const checkAuthAndLoadData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -31,14 +34,9 @@ const Dashboard = () => {
       return;
     }
 
-    // Get user name from profile
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("user_id", session.user.id)
-      .single();
-
-    setUserName(profile?.full_name || session.user.email?.split("@")[0] || "User");
+    // Use profile from context if available
+    const displayName = profile?.full_name || profile?.username || session.user.email?.split("@")[0] || "User";
+    setUserName(displayName);
 
     // Get scan statistics
     const { data: scans } = await supabase
@@ -117,13 +115,22 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={() => navigate("/profile")} variant="outline">
-                <User className="w-4 h-4 mr-2" />
-                Profile
+              <Button onClick={() => navigate("/profile")} variant="outline" className="flex items-center gap-2 px-2 pr-3">
+                <Avatar className="w-8 h-8">
+                  {profile?.avatar_url ? (
+                    <AvatarImage src={profile.avatar_url} alt={profile.username || "User"} />
+                  ) : null}
+                  <AvatarFallback className="bg-primary/10">
+                    <User className="w-4 h-4 text-primary" />
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden sm:inline">
+                  {profile?.username || "Profile"}
+                </span>
               </Button>
               <Button onClick={handleSignOut} variant="outline">
                 <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>
@@ -139,7 +146,14 @@ const Dashboard = () => {
           {/* Welcome Section */}
           <motion.div variants={itemVariants} className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <User className="w-8 h-8 text-primary" />
+              <Avatar className="w-12 h-12">
+                {profile?.avatar_url ? (
+                  <AvatarImage src={profile.avatar_url} alt={profile.username || "User"} />
+                ) : null}
+                <AvatarFallback className="bg-primary/10">
+                  <User className="w-8 h-8 text-primary" />
+                </AvatarFallback>
+              </Avatar>
               <h2 className="text-4xl font-bold text-foreground">Welcome back, {userName}!</h2>
             </div>
             <p className="text-muted-foreground text-lg">Manage your plants and track their health</p>
