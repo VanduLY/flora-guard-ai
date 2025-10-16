@@ -23,10 +23,10 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('OPENWEATHERMAP_API_KEY');
     if (!apiKey) {
-      console.error('OpenWeatherMap API key not found');
+      console.error('OpenWeatherMap API key not found - using demo data');
       return new Response(
-        JSON.stringify({ error: 'Weather service configuration error' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify(generateDemoWeather(latitude, longitude)),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -35,10 +35,13 @@ serve(async (req) => {
     const currentWeatherResponse = await fetch(currentWeatherUrl);
     
     if (!currentWeatherResponse.ok) {
-      console.error('OpenWeatherMap API error:', await currentWeatherResponse.text());
+      const errorText = await currentWeatherResponse.text();
+      console.error('OpenWeatherMap API error:', errorText);
+      
+      // Return demo data on API failure
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch weather data' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify(generateDemoWeather(latitude, longitude)),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -177,4 +180,46 @@ function processForecast(forecast: any) {
   }));
 
   return next24Hours;
+}
+
+function generateDemoWeather(latitude: number, longitude: number) {
+  const demoConditions = [
+    { main: 'Clear', description: 'clear sky', icon: '01d' },
+    { main: 'Clouds', description: 'few clouds', icon: '02d' },
+    { main: 'Rain', description: 'light rain', icon: '10d' },
+  ];
+  
+  const randomCondition = demoConditions[Math.floor(Math.random() * demoConditions.length)];
+  const baseTemp = 20 + Math.floor(Math.random() * 15); // 20-35°C
+  const humidity = 40 + Math.floor(Math.random() * 40); // 40-80%
+  
+  const demoWeather = {
+    main: {
+      temp: baseTemp,
+      humidity: humidity,
+    },
+    weather: [{
+      main: randomCondition.main,
+      description: randomCondition.description,
+      icon: randomCondition.icon,
+    }],
+    wind: {
+      speed: 2 + Math.random() * 5, // 2-7 m/s
+    },
+    name: 'Demo Location',
+  };
+
+  return {
+    temperature: Math.round(demoWeather.main.temp),
+    condition: demoWeather.weather[0].main,
+    description: demoWeather.weather[0].description + ' (demo data)',
+    humidity: demoWeather.main.humidity,
+    windSpeed: Math.round(demoWeather.wind.speed * 3.6),
+    icon: demoWeather.weather[0].icon,
+    location: `Demo (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
+    alerts: generatePlantAlerts(demoWeather),
+    careTips: generateCareTips(demoWeather),
+    forecast: null,
+    isDemo: true,
+  };
 }
