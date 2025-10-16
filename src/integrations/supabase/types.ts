@@ -57,42 +57,51 @@ export type Database = {
         Row: {
           confidence_score: number | null
           created_at: string | null
+          custom_name: string | null
           diagnosis: string | null
           disease_detected: string | null
           health_status: string
           id: string
           image_url: string
+          is_favorite: boolean | null
           location: string | null
           plant_type: string | null
           recommendations: string[] | null
+          tags: string[] | null
           user_id: string | null
           weather_data: Json | null
         }
         Insert: {
           confidence_score?: number | null
           created_at?: string | null
+          custom_name?: string | null
           diagnosis?: string | null
           disease_detected?: string | null
           health_status: string
           id?: string
           image_url: string
+          is_favorite?: boolean | null
           location?: string | null
           plant_type?: string | null
           recommendations?: string[] | null
+          tags?: string[] | null
           user_id?: string | null
           weather_data?: Json | null
         }
         Update: {
           confidence_score?: number | null
           created_at?: string | null
+          custom_name?: string | null
           diagnosis?: string | null
           disease_detected?: string | null
           health_status?: string
           id?: string
           image_url?: string
+          is_favorite?: boolean | null
           location?: string | null
           plant_type?: string | null
           recommendations?: string[] | null
+          tags?: string[] | null
           user_id?: string | null
           weather_data?: Json | null
         }
