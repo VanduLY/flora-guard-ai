@@ -17,6 +17,7 @@ interface UserContextType {
   loading: boolean;
   refreshProfile: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => void;
+  saveProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -64,6 +65,47 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const saveProfile = async (updates: Partial<UserProfile>): Promise<boolean> => {
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser) return false;
+
+        // Update database
+        const { error } = await supabase
+          .from("profiles")
+          .update(updates)
+          .eq("user_id", currentUser.id);
+
+        if (error) throw error;
+
+        // Update local state and cache on success
+        const updated = profile ? { ...profile, ...updates } : null;
+        setProfile(updated);
+        if (updated) {
+          localStorage.setItem("userProfile", JSON.stringify(updated));
+        }
+
+        return true;
+      } catch (error) {
+        attempt++;
+        console.error(`Save attempt ${attempt} failed:`, error);
+        if (attempt >= maxRetries) {
+          // Still update local state as fallback
+          updateProfile(updates);
+          return false;
+        }
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     // Load cached profile immediately for fast initial render
     const cached = localStorage.getItem("userProfile");
@@ -104,7 +146,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, profile, loading, refreshProfile, updateProfile }}>
+    <UserContext.Provider value={{ user, profile, loading, refreshProfile, updateProfile, saveProfile }}>
       {children}
     </UserContext.Provider>
   );

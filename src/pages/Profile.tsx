@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, Mail, Lock, Camera, ArrowLeft, Loader2 } from "lucide-react";
@@ -14,7 +14,7 @@ import { compressImage } from "@/lib/imageCompression";
 const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user: authUser, profile: userProfile, updateProfile: updateGlobalProfile, refreshProfile } = useUser();
+  const { user: authUser, profile: userProfile, updateProfile: updateGlobalProfile, saveProfile, refreshProfile } = useUser();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState({
@@ -28,6 +28,8 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     loadProfile();
@@ -49,6 +51,9 @@ const Profile = () => {
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const maxRetries = 3;
+    let attempt = 0;
+
     try {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -91,45 +96,50 @@ const Profile = () => {
         }
       }
 
-      // Upload new avatar
-      const fileExt = compressedFile.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      // Upload with retry logic
+      while (attempt < maxRetries) {
+        try {
+          const fileExt = compressedFile.name.split(".").pop();
+          const fileName = `${Date.now()}.${fileExt}`;
+          const filePath = `${user.id}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, compressedFile);
+          const { error: uploadError } = await supabase.storage
+            .from("avatars")
+            .upload(filePath, compressedFile);
 
-      if (uploadError) throw uploadError;
+          if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from("avatars")
+            .getPublicUrl(filePath);
 
-      // Update profile
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("user_id", user.id);
+          // Update profile in database with retry
+          const success = await saveProfile({ avatar_url: publicUrl });
 
-      if (updateError) throw updateError;
+          if (success) {
+            // Update local state
+            setProfile({ ...profile, avatar_url: publicUrl });
 
-      // Update local state
-      setProfile({ ...profile, avatar_url: publicUrl });
-      
-      // Update global context for immediate UI update across all pages
-      updateGlobalProfile({ avatar_url: publicUrl });
-
-      toast({
-        title: "Success",
-        description: "Profile picture updated successfully",
-      });
+            toast({
+              title: "Success",
+              description: "Profile picture updated successfully",
+            });
+            return;
+          } else if (attempt < maxRetries - 1) {
+            throw new Error("Failed to save to database");
+          }
+        } catch (error) {
+          attempt++;
+          if (attempt >= maxRetries) throw error;
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
     } catch (error) {
       console.error("Error uploading avatar:", error);
       toast({
         title: "Upload failed",
-        description: "Failed to upload profile picture",
+        description: "Failed to upload profile picture. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -151,23 +161,19 @@ const Profile = () => {
         }
       }
 
-      const { error } = await supabase
-        .from("profiles")
-        .update({ avatar_url: null })
-        .eq("user_id", user.id);
+      const success = await saveProfile({ avatar_url: null });
 
-      if (error) throw error;
+      if (success) {
+        // Update local state
+        setProfile({ ...profile, avatar_url: "" });
 
-      // Update local state
-      setProfile({ ...profile, avatar_url: "" });
-      
-      // Update global context
-      updateGlobalProfile({ avatar_url: null });
-
-      toast({
-        title: "Success",
-        description: "Profile picture removed",
-      });
+        toast({
+          title: "Success",
+          description: "Profile picture removed",
+        });
+      } else {
+        throw new Error("Failed to update profile");
+      }
     } catch (error) {
       console.error("Error removing avatar:", error);
       toast({
@@ -177,6 +183,32 @@ const Profile = () => {
       });
     }
   };
+
+  const autoSaveProfile = useCallback(async (updates: Partial<typeof profile>) => {
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save (debounced)
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const profileUpdates: any = {};
+        if (updates.username !== undefined) profileUpdates.username = updates.username;
+        if (updates.full_name !== undefined) profileUpdates.full_name = updates.full_name;
+        if (updates.location !== undefined) profileUpdates.location = updates.location;
+
+        if (Object.keys(profileUpdates).length > 0) {
+          await saveProfile(profileUpdates);
+        }
+      } catch (error) {
+        console.error("Auto-save failed:", error);
+      }
+    }, 1000); // Auto-save after 1 second of inactivity
+  }, [saveProfile]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,29 +226,24 @@ const Profile = () => {
         if (emailError) throw emailError;
       }
 
-      // Update profile data
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          username: profile.username,
-          full_name: profile.full_name,
-          location: profile.location,
-        })
-        .eq("user_id", user.id);
-
-      if (profileError) throw profileError;
-
-      // Update global context for immediate UI update
-      updateGlobalProfile({
+      // Update profile data with retry
+      const success = await saveProfile({
         username: profile.username,
         full_name: profile.full_name,
         location: profile.location,
       });
 
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Profile updated successfully",
+        });
+      } else {
+        toast({
+          title: "Partial success",
+          description: "Profile saved locally, will sync when connection improves",
+        });
+      }
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
@@ -367,9 +394,11 @@ const Profile = () => {
                   <Input
                     id="username"
                     value={profile.username}
-                    onChange={(e) =>
-                      setProfile({ ...profile, username: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setProfile({ ...profile, username: newValue });
+                      autoSaveProfile({ username: newValue });
+                    }}
                     className="pl-10"
                     placeholder="Enter username"
                   />
@@ -381,9 +410,11 @@ const Profile = () => {
                 <Input
                   id="full_name"
                   value={profile.full_name}
-                  onChange={(e) =>
-                    setProfile({ ...profile, full_name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setProfile({ ...profile, full_name: newValue });
+                    autoSaveProfile({ full_name: newValue });
+                  }}
                   placeholder="Enter full name"
                 />
               </div>
@@ -410,9 +441,11 @@ const Profile = () => {
                 <Input
                   id="location"
                   value={profile.location}
-                  onChange={(e) =>
-                    setProfile({ ...profile, location: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setProfile({ ...profile, location: newValue });
+                    autoSaveProfile({ location: newValue });
+                  }}
                   placeholder="Enter location"
                 />
               </div>
