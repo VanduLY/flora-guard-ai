@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { ThemeToggle } from "./ThemeToggle";
 import KanUploadZone from "./kan-upload-zone";
 import KanCameraFeed from "./kan-camera-feed";
 import KanDiseaseResults from "./kan-disease-results";
@@ -61,6 +62,7 @@ const KanApp = () => {
             </motion.div>
             
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button 
                 onClick={() => navigate("/dashboard")} 
                 variant="outline"
