@@ -109,9 +109,20 @@ const ScanDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      className="min-h-screen bg-background"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-50">
+      <motion.div 
+        className="bg-card border-b border-border sticky top-0 z-50"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: [0.45, 0, 0.55, 1] }}
+      >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button onClick={() => navigate("/detect")} variant="outline" className="gap-2">
@@ -133,34 +144,43 @@ const ScanDetail = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-6xl mx-auto space-y-6"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Results */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
               <KanDiseaseResults result={resultData} isAnalyzing={false} />
-            </div>
+            </motion.div>
 
             {/* Recovery Timeline */}
             {scan.disease_detected && (
-              <div>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 <KanRecoveryTimeline
                   diseaseType={scan.disease_detected}
                   severity={getSeverity()}
                 />
-              </div>
+              </motion.div>
             )}
           </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

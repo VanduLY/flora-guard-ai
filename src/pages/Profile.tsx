@@ -306,23 +306,41 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 md:p-8">
-      <div className="fixed top-4 right-4 z-50">
+    <motion.div 
+      className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 md:p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="fixed top-4 right-4 z-50"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         <ThemeToggle />
-      </div>
+      </motion.div>
       <div className="max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/dashboard")}
-          className="mb-6"
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
-        </Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/dashboard")}
+            className="mb-6 group"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+            Back to Dashboard
+          </Button>
+        </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="space-y-6"
         >
           <div className="text-center mb-8">
@@ -335,7 +353,12 @@ const Profile = () => {
           </div>
 
           {/* Avatar Section */}
-          <Card className="p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Card className="p-6">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border-4 border-primary/20 transition-all group-hover:border-primary/40">
@@ -383,10 +406,16 @@ const Profile = () => {
                   )}
                 </div>
               </div>
-          </Card>
+            </Card>
+          </motion.div>
 
           {/* Profile Information */}
-          <Card className="p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="p-6">
             <h2 className="text-2xl font-bold mb-6 text-foreground">
               Profile Information
             </h2>
@@ -465,10 +494,16 @@ const Profile = () => {
                 )}
               </Button>
             </form>
-          </Card>
+            </Card>
+          </motion.div>
 
           {/* Change Password */}
-          <Card className="p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Card className="p-6">
             <h2 className="text-2xl font-bold mb-6 text-foreground">
               Change Password
             </h2>
@@ -522,9 +557,10 @@ const Profile = () => {
               </Button>
             </form>
           </Card>
+          </motion.div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

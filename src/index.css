@@ -233,11 +233,15 @@ All colors MUST be HSL.
   button, .btn {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.3s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  button:hover, .btn:hover {
+    transform: translateY(-2px);
   }
 
   button:active, .btn:active {
-    transform: scale(0.95);
+    transform: scale(0.96) translateY(0);
   }
 
   button::before, .btn::before {
