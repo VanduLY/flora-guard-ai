@@ -107,13 +107,23 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html,
   body {
-    @apply bg-background text-foreground;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    height: 100%;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Ultra-smooth theme transitions */
+    transition: background-color 0.4s cubic-bezier(0.45, 0, 0.55, 1), 
+                color 0.4s cubic-bezier(0.45, 0, 0.55, 1);
   }
 
-  html {
-    scroll-behavior: smooth;
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Enable GPU acceleration for smoother animations */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 
   @keyframes gradient-shift {
@@ -229,19 +239,23 @@ All colors MUST be HSL.
     filter: blur(4px);
   }
 
-  /* Button micro-interactions */
+  /* Button micro-interactions - Premium buttery smooth */
   button, .btn {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.45, 0, 0.55, 1);
+    transition: all 0.2s cubic-bezier(0.45, 0, 0.55, 1);
+    /* GPU acceleration */
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
   }
 
   button:hover, .btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02) translateZ(0);
   }
 
   button:active, .btn:active {
-    transform: scale(0.96) translateY(0);
+    transform: scale(0.97) translateZ(0);
+    transition-duration: 0.1s;
   }
 
   button::before, .btn::before {

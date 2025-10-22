@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Camera, History, BookOpen, Activity, Leaf, Heart, AlertCircle, Scan, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import PerpetualBackground from "@/components/PerpetualBackground";
+import { staggerContainer, fadeInUp } from "@/components/PageTransition";
+import { DURATIONS, EASINGS, SPRINGS } from "@/lib/motion-config";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -75,24 +77,17 @@ const Dashboard = () => {
     );
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
+  const headerRef = useRef(null);
+  const statsRef = useRef(null);
+  const actionsRef = useRef(null);
+  const featuresRef = useRef(null);
+  const recentRef = useRef(null);
+  
+  const headerInView = useInView(headerRef, { once: true });
+  const statsInView = useInView(statsRef, { once: true });
+  const actionsInView = useInView(actionsRef, { once: true });
+  const featuresInView = useInView(featuresRef, { once: true });
+  const recentInView = useInView(recentRef, { once: true });
 
   return (
     <motion.div 
@@ -100,16 +95,17 @@ const Dashboard = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: DURATIONS.smooth, ease: EASINGS.butter }}
     >
       <PerpetualBackground />
       
       {/* Header */}
       <motion.header 
-        className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.45, 0, 0.55, 1] }}
+        ref={headerRef}
+        className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border shadow-soft"
+        initial={{ y: -100, opacity: 0 }}
+        animate={headerInView ? { y: 0, opacity: 1 } : {}}
+        transition={SPRINGS.butter}
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -152,12 +148,12 @@ const Dashboard = () => {
 
       <div className="relative z-10 container mx-auto px-4 py-8">
         <motion.div
-          variants={containerVariants}
+          variants={staggerContainer}
           initial="hidden"
           animate="visible"
         >
           {/* Welcome Section */}
-          <motion.div variants={itemVariants} className="mb-8">
+          <motion.div variants={fadeInUp} className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <Avatar className="w-12 h-12">
                 {profile?.avatar_url ? (
@@ -173,9 +169,20 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Stats Cards */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <motion.div whileHover={{ scale: 1.05, y: -5 }} transition={{ duration: 0.3 }}>
-              <Card className="glass-morph border-primary/20 hover:border-primary/40 transition-all duration-300 cursor-pointer">
+          <motion.div 
+            ref={statsRef}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={statsInView ? "visible" : "hidden"}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+          >
+            <motion.div 
+              variants={fadeInUp}
+              whileHover={{ scale: 1.03, y: -6 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+            >
+              <Card className="glass-morph border-primary/20 hover:border-primary/40 hover:shadow-xl transition-all cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Plants Tracked</CardTitle>
                 <Leaf className="w-5 h-5 text-primary" />
@@ -186,8 +193,13 @@ const Dashboard = () => {
             </Card>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05, y: -5 }} transition={{ duration: 0.3 }}>
-              <Card className="glass-morph border-green-500/20 hover:border-green-500/40 transition-all duration-300 cursor-pointer">
+            <motion.div 
+              variants={fadeInUp}
+              whileHover={{ scale: 1.03, y: -6 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+            >
+              <Card className="glass-morph border-green-500/20 hover:border-green-500/40 hover:shadow-xl transition-all cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Healthy Plants</CardTitle>
                 <Heart className="w-5 h-5 text-green-500" />
@@ -198,8 +210,13 @@ const Dashboard = () => {
             </Card>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05, y: -5 }} transition={{ duration: 0.3 }}>
-              <Card className="glass-morph border-orange-500/20 hover:border-orange-500/40 transition-all duration-300 cursor-pointer">
+            <motion.div 
+              variants={fadeInUp}
+              whileHover={{ scale: 1.03, y: -6 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+            >
+              <Card className="glass-morph border-orange-500/20 hover:border-orange-500/40 hover:shadow-xl transition-all cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Needs Care</CardTitle>
                 <AlertCircle className="w-5 h-5 text-orange-500" />
@@ -212,22 +229,40 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Quick Actions */}
-          <motion.div variants={itemVariants} className="mb-8">
+          <motion.div 
+            ref={actionsRef}
+            variants={fadeInUp}
+            initial="hidden"
+            animate={actionsInView ? "visible" : "hidden"}
+            className="mb-8"
+          >
             <h3 className="text-2xl font-bold text-foreground mb-4">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Button size="lg" onClick={() => navigate("/detect")} className="gap-2">
                   <Camera className="w-5 h-5" />
                   Scan New Plant
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Button size="lg" variant="outline" onClick={() => navigate("/detect")} className="gap-2">
                   <History className="w-5 h-5" />
                   View History
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Button size="lg" variant="outline" onClick={() => navigate("/detect")} className="gap-2">
                   <BookOpen className="w-5 h-5" />
                   Care Guide
@@ -237,10 +272,25 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Main Features Grid */}
-          <motion.div variants={itemVariants}>
+          <motion.div 
+            ref={featuresRef}
+            variants={fadeInUp}
+            initial="hidden"
+            animate={featuresInView ? "visible" : "hidden"}
+          >
             <h3 className="text-2xl font-bold text-foreground mb-4">Features</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ duration: 0.3 }}>
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={featuresInView ? "visible" : "hidden"}
+            >
+              <motion.div 
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03, y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
                   onClick={() => navigate("/detect")}
@@ -257,7 +307,12 @@ const Dashboard = () => {
               </Card>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ duration: 0.3 }}>
+              <motion.div 
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03, y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
                   onClick={() => navigate("/detect")}
@@ -274,7 +329,12 @@ const Dashboard = () => {
               </Card>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ duration: 0.3 }}>
+              <motion.div 
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03, y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
                   onClick={() => navigate("/detect")}
@@ -291,7 +351,12 @@ const Dashboard = () => {
               </Card>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.03, y: -5 }} transition={{ duration: 0.3 }}>
+              <motion.div 
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03, y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
                   onClick={() => navigate("/detect")}
@@ -307,21 +372,31 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
               </motion.div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Recent Activity */}
           {recentScans.length > 0 && (
-            <motion.div variants={itemVariants}>
+            <motion.div 
+              ref={recentRef}
+              variants={fadeInUp}
+              initial="hidden"
+              animate={recentInView ? "visible" : "hidden"}
+            >
               <h3 className="text-2xl font-bold text-foreground mb-4">Recent Activity</h3>
-              <div className="space-y-3">
+              <motion.div 
+                className="space-y-3"
+                variants={staggerContainer}
+                initial="hidden"
+                animate={recentInView ? "visible" : "hidden"}
+              >
                 {recentScans.map((scan, index) => (
                   <motion.div
                     key={scan.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    whileHover={{ scale: 1.02, x: 5 }}
+                    variants={fadeInUp}
+                    whileHover={{ scale: 1.02, x: 6 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
                   >
                     <Card 
                       className="glass-morph hover:shadow-md transition-all cursor-pointer"
@@ -358,7 +433,7 @@ const Dashboard = () => {
                   </Card>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </motion.div>
