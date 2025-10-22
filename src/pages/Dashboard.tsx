@@ -26,18 +26,19 @@ const Dashboard = () => {
   });
   const [recentScans, setRecentScans] = useState<any[]>([]);
 
-  // Initialize refs before any conditional returns
+  // Initialize refs
   const headerRef = useRef(null);
   const statsRef = useRef(null);
   const actionsRef = useRef(null);
   const featuresRef = useRef(null);
   const recentRef = useRef(null);
   
-  const headerInView = useInView(headerRef, { once: true });
-  const statsInView = useInView(statsRef, { once: true });
-  const actionsInView = useInView(actionsRef, { once: true });
-  const featuresInView = useInView(featuresRef, { once: true });
-  const recentInView = useInView(recentRef, { once: true });
+  // Only use inView when not loading to avoid hook issues
+  const headerInView = useInView(headerRef, { once: true, amount: 0.1 });
+  const statsInView = useInView(statsRef, { once: true, amount: 0.1 });
+  const actionsInView = useInView(actionsRef, { once: true, amount: 0.1 });
+  const featuresInView = useInView(featuresRef, { once: true, amount: 0.1 });
+  const recentInView = useInView(recentRef, { once: true, amount: 0.1 });
 
   useEffect(() => {
     checkAuthAndLoadData();
@@ -82,15 +83,13 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   return (
+    <>
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      ) : (
     <motion.div 
       className="min-h-screen relative"
       initial={{ opacity: 0 }}
@@ -440,6 +439,8 @@ const Dashboard = () => {
         </motion.div>
       </div>
     </motion.div>
+      )}
+    </>
   );
 };
 
