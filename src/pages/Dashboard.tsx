@@ -26,6 +26,19 @@ const Dashboard = () => {
   });
   const [recentScans, setRecentScans] = useState<any[]>([]);
 
+  // Initialize refs before any conditional returns
+  const headerRef = useRef(null);
+  const statsRef = useRef(null);
+  const actionsRef = useRef(null);
+  const featuresRef = useRef(null);
+  const recentRef = useRef(null);
+  
+  const headerInView = useInView(headerRef, { once: true });
+  const statsInView = useInView(statsRef, { once: true });
+  const actionsInView = useInView(actionsRef, { once: true });
+  const featuresInView = useInView(featuresRef, { once: true });
+  const recentInView = useInView(recentRef, { once: true });
+
   useEffect(() => {
     checkAuthAndLoadData();
   }, [profile]);
@@ -76,18 +89,6 @@ const Dashboard = () => {
       </div>
     );
   }
-
-  const headerRef = useRef(null);
-  const statsRef = useRef(null);
-  const actionsRef = useRef(null);
-  const featuresRef = useRef(null);
-  const recentRef = useRef(null);
-  
-  const headerInView = useInView(headerRef, { once: true });
-  const statsInView = useInView(statsRef, { once: true });
-  const actionsInView = useInView(actionsRef, { once: true });
-  const featuresInView = useInView(featuresRef, { once: true });
-  const recentInView = useInView(recentRef, { once: true });
 
   return (
     <motion.div 
