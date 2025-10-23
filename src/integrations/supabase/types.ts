@@ -14,6 +14,204 @@ export type Database = {
   }
   public: {
     Tables: {
+      care_schedules: {
+        Row: {
+          auto_adjust_weather: boolean | null
+          created_at: string
+          custom_instructions: string | null
+          frequency_days: number
+          id: string
+          last_completed_at: string | null
+          next_due_at: string
+          plant_id: string
+          priority: string | null
+          task_type: string
+          updated_at: string
+        }
+        Insert: {
+          auto_adjust_weather?: boolean | null
+          created_at?: string
+          custom_instructions?: string | null
+          frequency_days?: number
+          id?: string
+          last_completed_at?: string | null
+          next_due_at: string
+          plant_id: string
+          priority?: string | null
+          task_type: string
+          updated_at?: string
+        }
+        Update: {
+          auto_adjust_weather?: boolean | null
+          created_at?: string
+          custom_instructions?: string | null
+          frequency_days?: number
+          id?: string
+          last_completed_at?: string | null
+          next_due_at?: string
+          plant_id?: string
+          priority?: string | null
+          task_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_schedules_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          notes: string | null
+          plant_id: string
+          priority: string | null
+          schedule_id: string | null
+          status: string | null
+          task_type: string
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          notes?: string | null
+          plant_id: string
+          priority?: string | null
+          schedule_id?: string | null
+          status?: string | null
+          task_type: string
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          notes?: string | null
+          plant_id?: string
+          priority?: string | null
+          schedule_id?: string | null
+          status?: string | null
+          task_type?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_tasks_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_tasks_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "care_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_milestones: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          measurement_unit: string | null
+          measurement_value: number | null
+          milestone_type: string
+          photo_url: string | null
+          plant_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          measurement_unit?: string | null
+          measurement_value?: number | null
+          milestone_type: string
+          photo_url?: string | null
+          plant_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          measurement_unit?: string | null
+          measurement_value?: number | null
+          milestone_type?: string
+          photo_url?: string | null
+          plant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_milestones_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plant_achievements: {
+        Row: {
+          achievement_type: string
+          description: string | null
+          earned_at: string
+          icon: string | null
+          id: string
+          metadata: Json | null
+          plant_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          description?: string | null
+          earned_at?: string
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          plant_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          description?: string | null
+          earned_at?: string
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          plant_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plant_achievements_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plant_diseases: {
         Row: {
           affected_plants: string[] | null
@@ -52,6 +250,59 @@ export type Database = {
           treatment?: string[] | null
         }
         Relationships: []
+      }
+      plant_health_logs: {
+        Row: {
+          ai_analysis: Json | null
+          created_at: string
+          detected_issues: string[] | null
+          environmental_data: Json | null
+          health_rating: number | null
+          id: string
+          mood: string | null
+          notes: string | null
+          photo_url: string | null
+          plant_id: string
+          user_id: string
+          vitality_score: number | null
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          created_at?: string
+          detected_issues?: string[] | null
+          environmental_data?: Json | null
+          health_rating?: number | null
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          plant_id: string
+          user_id: string
+          vitality_score?: number | null
+        }
+        Update: {
+          ai_analysis?: Json | null
+          created_at?: string
+          detected_issues?: string[] | null
+          environmental_data?: Json | null
+          health_rating?: number | null
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          plant_id?: string
+          user_id?: string
+          vitality_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plant_health_logs_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plant_scans: {
         Row: {
@@ -137,6 +388,108 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      user_care_preferences: {
+        Row: {
+          auto_adjust_schedules: boolean | null
+          created_at: string
+          email_reminders: boolean | null
+          id: string
+          notification_enabled: boolean | null
+          notification_time: string | null
+          preferred_units: string | null
+          theme_preference: string | null
+          updated_at: string
+          user_id: string
+          weather_sync_enabled: boolean | null
+        }
+        Insert: {
+          auto_adjust_schedules?: boolean | null
+          created_at?: string
+          email_reminders?: boolean | null
+          id?: string
+          notification_enabled?: boolean | null
+          notification_time?: string | null
+          preferred_units?: string | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id: string
+          weather_sync_enabled?: boolean | null
+        }
+        Update: {
+          auto_adjust_schedules?: boolean | null
+          created_at?: string
+          email_reminders?: boolean | null
+          id?: string
+          notification_enabled?: boolean | null
+          notification_time?: string | null
+          preferred_units?: string | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id?: string
+          weather_sync_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      user_plants: {
+        Row: {
+          acquired_date: string | null
+          climate_zone: string | null
+          created_at: string
+          custom_notes: string | null
+          growth_stage: string | null
+          health_status: string | null
+          id: string
+          image_url: string | null
+          light_requirement: string | null
+          location: string | null
+          nickname: string
+          plant_type: string | null
+          soil_type: string | null
+          species: string
+          updated_at: string
+          user_id: string
+          water_frequency_days: number | null
+        }
+        Insert: {
+          acquired_date?: string | null
+          climate_zone?: string | null
+          created_at?: string
+          custom_notes?: string | null
+          growth_stage?: string | null
+          health_status?: string | null
+          id?: string
+          image_url?: string | null
+          light_requirement?: string | null
+          location?: string | null
+          nickname: string
+          plant_type?: string | null
+          soil_type?: string | null
+          species: string
+          updated_at?: string
+          user_id: string
+          water_frequency_days?: number | null
+        }
+        Update: {
+          acquired_date?: string | null
+          climate_zone?: string | null
+          created_at?: string
+          custom_notes?: string | null
+          growth_stage?: string | null
+          health_status?: string | null
+          id?: string
+          image_url?: string | null
+          light_requirement?: string | null
+          location?: string | null
+          nickname?: string
+          plant_type?: string | null
+          soil_type?: string | null
+          species?: string
+          updated_at?: string
+          user_id?: string
+          water_frequency_days?: number | null
         }
         Relationships: []
       }
