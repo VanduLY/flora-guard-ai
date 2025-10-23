@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import PlantDetection from "./pages/PlantDetection";
+import CarePlanner from "./pages/CarePlanner";
 import ScanDetail from "./pages/ScanDetail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -25,6 +26,7 @@ const AnimatedRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/detect" element={<PlantDetection />} />
+        <Route path="/care-planner" element={<CarePlanner />} />
         <Route path="/scan/:id" element={<ScanDetail />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
