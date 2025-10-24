@@ -11,7 +11,7 @@ const PerpetualBackground = () => {
   return (
     <div className="perpetual-motion-bg">
       {/* Drifting leaf particles with varied motion */}
-      {[...Array(20)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <motion.div
           key={`drift-${i}`}
           className="absolute"
@@ -38,7 +38,7 @@ const PerpetualBackground = () => {
       ))}
 
       {/* Floating sparkles with random paths */}
-      {[...Array(12)].map((_, i) => (
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`sparkle-${i}`}
           className="absolute"
@@ -65,7 +65,7 @@ const PerpetualBackground = () => {
       ))}
 
       {/* Orbiting gradient blobs with morphing - Elliptical paths */}
-      {[...Array(6)].map((_, i) => (
+      {[...Array(3)].map((_, i) => (
         <motion.div
           key={`orbit-${i}`}
           className="absolute rounded-full bg-elliptical cinematic-float"
@@ -92,7 +92,7 @@ const PerpetualBackground = () => {
       ))}
 
       {/* Pulsating concentric rings with varied patterns */}
-      {[...Array(4)].map((_, i) => (
+      {[...Array(2)].map((_, i) => (
         <motion.div
           key={`ring-${i}`}
           className="absolute"
@@ -121,7 +121,7 @@ const PerpetualBackground = () => {
       ))}
 
       {/* Floating geometric shapes with morphing */}
-      {[...Array(10)].map((_, i) => (
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`geo-${i}`}
           className="absolute"
@@ -156,7 +156,7 @@ const PerpetualBackground = () => {
       ))}
 
       {/* Floating dots/circles */}
-      {[...Array(15)].map((_, i) => (
+      {[...Array(5)].map((_, i) => (
         <motion.div
           key={`dot-${i}`}
           className="absolute"
