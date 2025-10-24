@@ -128,11 +128,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     // Listen to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await loadProfile(session.user);
+          // Defer Supabase calls to prevent deadlock
+          setTimeout(() => {
+            loadProfile(session.user);
+          }, 0);
         } else {
           setProfile(null);
           localStorage.removeItem("userProfile");
