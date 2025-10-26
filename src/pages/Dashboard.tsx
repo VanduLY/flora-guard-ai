@@ -280,7 +280,7 @@ const Dashboard = () => {
           >
             <h3 className="text-2xl font-bold text-foreground mb-4">Features</h3>
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
               variants={staggerContainer}
               initial="hidden"
               animate={featuresInView ? "visible" : "hidden"}
@@ -368,6 +368,28 @@ const Dashboard = () => {
                   <CardTitle>Recovery Tracker</CardTitle>
                   <CardDescription>
                     Monitor plant recovery progress with detailed timelines and care stages
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              </motion.div>
+
+              <motion.div 
+                variants={fadeInUp}
+                whileHover={{ scale: 1.03, y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
+              >
+                <Card 
+                  className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
+                  onClick={() => navigate("/care-planner")}
+                >
+                <CardHeader>
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    <Leaf className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>Care Planner</CardTitle>
+                  <CardDescription>
+                    Manage your plant collection with personalized care schedules and growth tracking
                   </CardDescription>
                 </CardHeader>
               </Card>
