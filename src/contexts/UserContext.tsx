@@ -33,16 +33,40 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         .from("profiles")
         .select("*")
         .eq("user_id", currentUser.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== "PGRST116") {
+      if (error) {
         console.error("Error loading profile:", error);
         return;
       }
 
-      if (data) {
+      // If no profile exists, create one
+      if (!data) {
+        const newProfile = {
+          user_id: currentUser.id,
+          username: currentUser.email?.split('@')[0] || 'user',
+          full_name: currentUser.user_metadata?.full_name || null,
+          avatar_url: currentUser.user_metadata?.avatar_url || null,
+          location: null
+        };
+
+        const { data: createdProfile, error: createError } = await supabase
+          .from("profiles")
+          .insert(newProfile)
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Error creating profile:", createError);
+          return;
+        }
+
+        if (createdProfile) {
+          setProfile(createdProfile);
+          localStorage.setItem("userProfile", JSON.stringify(createdProfile));
+        }
+      } else {
         setProfile(data);
-        // Also cache in localStorage for immediate access
         localStorage.setItem("userProfile", JSON.stringify(data));
       }
     } catch (error) {
