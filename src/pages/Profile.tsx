@@ -37,18 +37,27 @@ const Profile = () => {
   }, [authUser, userProfile]);
 
   const loadProfile = async () => {
-    if (!authUser) {
-      navigate("/login");
-      return;
-    }
+    try {
+      if (!authUser) {
+        navigate("/login");
+        return;
+      }
 
-    setProfile({
-      username: userProfile?.username || "",
-      full_name: userProfile?.full_name || "",
-      email: authUser.email || "",
-      avatar_url: userProfile?.avatar_url || "",
-      location: userProfile?.location || "",
-    });
+      setProfile({
+        username: userProfile?.username || "",
+        full_name: userProfile?.full_name || "",
+        email: authUser.email || "",
+        avatar_url: userProfile?.avatar_url || "",
+        location: userProfile?.location || "",
+      });
+    } catch (error) {
+      console.error("Error loading profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data. Please refresh the page.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

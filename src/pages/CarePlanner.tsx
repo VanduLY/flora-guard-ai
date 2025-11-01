@@ -25,12 +25,35 @@ const CarePlanner = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Session error:", error);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to verify session. Please sign in again.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+    } catch (error) {
+      console.error("Unexpected error in checkAuth:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please refresh the page.",
+        variant: "destructive",
+      });
       navigate("/login");
-      return;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (loading) {

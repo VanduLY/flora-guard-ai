@@ -1,73 +1,223 @@
-# Welcome to my project
+# FloraGuard AI - Plant Disease Detection Platform
 
-## Project info
+An AI-powered web application for detecting plant diseases and providing personalized care recommendations.
 
-**URL**: https://lovable.dev/projects/7fda86d0-3243-4bd8-b8e4-f38a39c4c529
+## 🌿 Features
 
-## How can I edit this code?
+- **AI Plant Disease Detection** - Upload or capture plant images for instant AI analysis
+- **Care Planner** - Manage your plant collection with personalized schedules
+- **Health Monitoring** - Track plant health and recovery progress
+- **Scan History** - Access previous scans and results
+- **Weather Alerts** - Get weather-based care recommendations
+- **Achievement System** - Track your plant care journey
 
-There are several ways of editing your application.
+## 🚀 Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI**: Tailwind CSS + shadcn/ui components
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Animations**: Framer Motion
+- **State Management**: React Context API
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7fda86d0-3243-4bd8-b8e4-f38a39c4c529) and start prompting.
+## 📋 Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ and npm
+- Supabase account (for backend services)
+- Modern web browser with camera support (optional, for live scanning)
 
-**Use your preferred IDE**
+## 🛠️ Local Development Setup
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/VanduLY/flora-guard-ai.git
+   cd flora-guard-ai
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Follow these steps:
+3. **Configure environment variables**
+   
+   Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+   Then fill in your Supabase credentials in `.env`:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+   VITE_SUPABASE_PROJECT_ID=your_supabase_project_id
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+   **Get your Supabase credentials:**
+   - Go to [Supabase Dashboard](https://supabase.com/dashboard)
+   - Select your project
+   - Go to Settings → API
+   - Copy the URL and anon/public key
 
-# Step 3: Install the necessary dependencies.
-npm i
+4. **Run development server**
+   ```bash
+   npm run dev
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+   The app will be available at `http://localhost:5173`
+
+## 🌐 Vercel Deployment
+
+### Quick Deploy
+
+1. Push your code to GitHub
+2. Import the project to Vercel
+3. Configure environment variables (see below)
+4. Deploy
+
+### ⚠️ CRITICAL: Environment Variables for Vercel
+
+**This is a Vite project, NOT Next.js - use `VITE_` prefix, NOT `NEXT_PUBLIC_`**
+
+Go to Vercel Dashboard → Your Project → Settings → Environment Variables:
+
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key_here
+VITE_SUPABASE_PROJECT_ID=your_project_id
 ```
 
-**Edit a file directly in GitHub**
+After setting variables, **redeploy** the application.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+📖 **Detailed deployment guide**: See [VERCEL_SETUP.md](./VERCEL_SETUP.md)
 
-**Use GitHub Codespaces**
+## 📁 Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+flora-guard-ai/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── ui/             # shadcn/ui base components
+│   │   ├── care-planner/   # Care planner specific components
+│   │   └── kan-*.tsx       # Plant detection components
+│   ├── contexts/           # React context providers
+│   ├── hooks/              # Custom React hooks
+│   ├── integrations/       # Third-party integrations (Supabase)
+│   ├── lib/               # Utility functions
+│   ├── pages/             # Route pages
+│   └── main.tsx           # App entry point
+├── public/                # Static assets
+└── supabase/              # Supabase configuration
+```
 
-## What technologies are used for this project?
+## 🔐 Authentication Setup
 
-This project is built with:
+The app uses Supabase Auth with email/password authentication.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Configure Supabase Auth:
 
-## How can I deploy this project?
+1. Go to Supabase Dashboard → Authentication → Providers
+2. Enable Email provider
+3. Configure redirect URLs:
+   - Add your Vercel domain: `https://your-app.vercel.app/**`
+   - Add localhost for development: `http://localhost:5173/**`
 
-Simply open [Lovable](https://lovable.dev/projects/7fda86d0-3243-4bd8-b8e4-f38a39c4c529) and click on Share -> Publish.
+4. **Auto-confirm emails** (recommended for development):
+   - Go to Authentication → Settings
+   - Enable "Enable email confirmations" → OFF (for dev)
+   - OR set up email templates for production
 
-## Can I connect a custom domain to my Lovable project?
+## 🗄️ Database Schema
 
-Yes, you can!
+The app uses these main Supabase tables:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `profiles` - User profile information
+- `plant_scans` - Plant disease detection results
+- `user_plants` - User's plant collection
+- Storage buckets: `avatars`, `plant-images`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🧪 Development Commands
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Type checking (if configured)
+npx tsc --noEmit
+
+# Linting
+npx eslint src
+```
+
+## 🐛 Troubleshooting
+
+### Blank screen or infinite loading after Vercel deployment
+
+**Symptoms**: Pages show blank dark screen or spinner never stops
+
+**Causes & Fixes**:
+
+1. **Missing/Wrong Environment Variables** (MOST COMMON)
+   - ✅ Check all variables use `VITE_` prefix in Vercel
+   - ❌ Do NOT use `NEXT_PUBLIC_` (that's for Next.js only)
+   - Verify values match your Supabase project exactly
+   - After adding/changing variables, **redeploy**
+
+2. **Check Browser Console**
+   - Open DevTools (F12) on the deployed site
+   - Look for errors like "Cannot read property 'VITE_SUPABASE_URL'"
+   - If you see this, environment variables aren't set correctly
+
+3. **Verify Supabase Connection**
+   - Test if Supabase credentials work locally first
+   - Check Supabase project is active and accessible
+   - Ensure API keys haven't been regenerated
+
+4. **Check Vercel Function Logs**
+   - Go to Vercel → Deployments → Latest → View Function Logs
+   - Look for runtime errors or timeout issues
+
+### Authentication issues
+
+- **Redirect to localhost**: Update Supabase redirect URLs to include your Vercel domain
+- **"Invalid login credentials"**: User profile may not exist, try signing up again
+- **Session not persisting**: Clear browser cache and cookies
+
+### Image upload failures
+
+- Verify Supabase storage buckets exist (`avatars`, `plant-images`)
+- Check storage policies allow authenticated users to upload
+- Ensure images are under 5MB
+
+### Development vs Production Differences
+
+- Local uses `.env` file → Vercel uses Dashboard environment variables
+- All `VITE_*` variables must be set in both places
+- Vercel requires manual redeploy after changing variables
+
+## 📝 Project Info
+
+**Lovable Project URL**: https://lovable.dev/projects/7fda86d0-3243-4bd8-b8e4-f38a39c4c529
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📧 Support
+
+For deployment issues:
+- See detailed [VERCEL_SETUP.md](./VERCEL_SETUP.md)
+- Check Troubleshooting section above
+- Open an issue on GitHub
+
+## 🌟 Acknowledgments
+
+- UI components by [shadcn/ui](https://ui.shadcn.com/)
+- Backend services by [Supabase](https://supabase.com/)
+- Animations by [Framer Motion](https://www.framer.com/motion/)
+- Built with [Lovable](https://lovable.dev/)

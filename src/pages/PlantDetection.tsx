@@ -12,11 +12,25 @@ const PlantDetection = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Session error:", error);
+        navigate("/login");
+        return;
+      }
+
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+    } catch (error) {
+      console.error("Unexpected error in checkAuth:", error);
       navigate("/login");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (loading) {

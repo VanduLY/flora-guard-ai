@@ -34,25 +34,50 @@ const PlantCollection = () => {
   }, []);
 
   const loadPlants = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("Error getting user:", userError);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to verify user. Please sign in again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const { data, error } = await supabase
-      .from("user_plants")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+      if (!user) {
+        console.warn("No user found");
+        return;
+      }
 
-    if (error) {
+      const { data, error } = await supabase
+        .from("user_plants")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error loading plants:", error);
+        toast({
+          title: "Error loading plants",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        setPlants(data || []);
+      }
+    } catch (error) {
+      console.error("Unexpected error loading plants:", error);
       toast({
-        title: "Error loading plants",
-        description: error.message,
+        title: "Error",
+        description: "An unexpected error occurred while loading your plants.",
         variant: "destructive",
       });
-    } else {
-      setPlants(data || []);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getHealthColor = (status: string) => {

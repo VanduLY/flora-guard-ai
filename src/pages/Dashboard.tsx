@@ -45,33 +45,61 @@ const Dashboard = () => {
   }, [profile]);
 
   const checkAuthAndLoadData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
-      return;
-    }
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to verify session. Please sign in again.",
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
 
-    // Use profile from context if available
-    const displayName = profile?.full_name || profile?.username || session.user.email?.split("@")[0] || "User";
-    setUserName(displayName);
+      if (!session) {
+        navigate("/login");
+        return;
+      }
 
-    // Get scan statistics
-    const { data: scans } = await supabase
-      .from("plant_scans")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .order("created_at", { ascending: false });
+      // Use profile from context if available
+      const displayName = profile?.full_name || profile?.username || session.user.email?.split("@")[0] || "User";
+      setUserName(displayName);
 
-    if (scans) {
-      setStats({
-        totalScans: scans.length,
-        healthyPlants: scans.filter(s => s.health_status === "healthy").length,
-        needsCare: scans.filter(s => s.health_status === "unhealthy" || s.disease_detected).length,
+      // Get scan statistics with error handling
+      const { data: scans, error: scansError } = await supabase
+        .from("plant_scans")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false });
+
+      if (scansError) {
+        console.error("Error loading scans:", scansError);
+        toast({
+          title: "Error loading data",
+          description: "Could not load your plant scans. Please refresh the page.",
+          variant: "destructive",
+        });
+      } else if (scans) {
+        setStats({
+          totalScans: scans.length,
+          healthyPlants: scans.filter(s => s.health_status === "healthy").length,
+          needsCare: scans.filter(s => s.health_status === "unhealthy" || s.disease_detected).length,
+        });
+        setRecentScans(scans.slice(0, 3));
+      }
+    } catch (error) {
+      console.error("Unexpected error in checkAuthAndLoadData:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please refresh the page.",
+        variant: "destructive",
       });
-      setRecentScans(scans.slice(0, 3));
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleSignOut = async () => {
