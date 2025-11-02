@@ -26,19 +26,8 @@ const Dashboard = () => {
   });
   const [recentScans, setRecentScans] = useState<any[]>([]);
 
-  // Initialize refs
   const headerRef = useRef(null);
-  const statsRef = useRef(null);
-  const actionsRef = useRef(null);
-  const featuresRef = useRef(null);
-  const recentRef = useRef(null);
-  
-  // Only use inView when not loading to avoid hook issues
   const headerInView = useInView(headerRef, { once: true, amount: 0.1 });
-  const statsInView = useInView(statsRef, { once: true, amount: 0.1 });
-  const actionsInView = useInView(actionsRef, { once: true, amount: 0.1 });
-  const featuresInView = useInView(featuresRef, { once: true, amount: 0.1 });
-  const recentInView = useInView(recentRef, { once: true, amount: 0.1 });
 
   useEffect(() => {
     checkAuthAndLoadData();
@@ -198,11 +187,10 @@ const Dashboard = () => {
 
           {/* Stats Cards */}
           <motion.div 
-            ref={statsRef}
-            variants={staggerContainer}
-            initial="hidden"
-            animate={statsInView ? "visible" : "hidden"}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
             <motion.div 
               variants={fadeInUp}
@@ -258,11 +246,10 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <motion.div 
-            ref={actionsRef}
-            variants={fadeInUp}
-            initial="hidden"
-            animate={actionsInView ? "visible" : "hidden"}
             className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h3 className="text-2xl font-bold text-foreground mb-4">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
@@ -300,19 +287,13 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Main Features Grid */}
-          <motion.div 
-            ref={featuresRef}
-            variants={fadeInUp}
-            initial="hidden"
-            animate={featuresInView ? "visible" : "hidden"}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h3 className="text-2xl font-bold text-foreground mb-4">Features</h3>
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={featuresInView ? "visible" : "hidden"}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <motion.div 
                 variants={fadeInUp}
                 whileHover={{ scale: 1.03, y: -6 }}
@@ -422,24 +403,18 @@ const Dashboard = () => {
                 </CardHeader>
               </Card>
               </motion.div>
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* Recent Activity */}
           {recentScans.length > 0 && (
-            <motion.div 
-              ref={recentRef}
-              variants={fadeInUp}
-              initial="hidden"
-              animate={recentInView ? "visible" : "hidden"}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
             >
               <h3 className="text-2xl font-bold text-foreground mb-4">Recent Activity</h3>
-              <motion.div 
-                className="space-y-3"
-                variants={staggerContainer}
-                initial="hidden"
-                animate={recentInView ? "visible" : "hidden"}
-              >
+              <div className="space-y-3">
                 {recentScans.map((scan, index) => (
                   <motion.div
                     key={scan.id}
@@ -483,7 +458,7 @@ const Dashboard = () => {
                   </Card>
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </motion.div>
