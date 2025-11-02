@@ -18,6 +18,9 @@ interface Plant {
   image_url?: string;
   location?: string;
   water_frequency_days: number;
+  source?: 'tracked' | 'scan';
+  created_at?: string;
+  disease_detected?: string;
 }
 
 const PlantCollection = () => {
@@ -50,22 +53,58 @@ const PlantCollection = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      // Load tracked plants
+      const { data: trackedPlants, error: trackedError } = await supabase
         .from("user_plants")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error loading plants:", error);
-        toast({
-          title: "Error loading plants",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        setPlants(data || []);
+      if (trackedError) {
+        console.error("Error loading tracked plants:", trackedError);
       }
+
+      // Load scanned plants
+      const { data: scannedPlants, error: scannedError } = await supabase
+        .from("plant_scans")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (scannedError) {
+        console.error("Error loading scanned plants:", scannedError);
+      }
+
+      // Combine both sources
+      const allPlants: Plant[] = [];
+
+      // Add tracked plants
+      if (trackedPlants) {
+        allPlants.push(...trackedPlants.map(p => ({
+          ...p,
+          source: 'tracked' as const
+        })));
+      }
+
+      // Add scanned plants (convert to Plant format)
+      if (scannedPlants) {
+        allPlants.push(...scannedPlants.map(scan => ({
+          id: scan.id,
+          nickname: scan.custom_name || scan.plant_type || "Scanned Plant",
+          species: scan.plant_type || "Unknown",
+          plant_type: scan.plant_type,
+          health_status: scan.health_status,
+          growth_stage: "unknown",
+          image_url: scan.image_url,
+          location: scan.location,
+          water_frequency_days: 7,
+          source: 'scan' as const,
+          created_at: scan.created_at,
+          disease_detected: scan.disease_detected
+        })));
+      }
+
+      setPlants(allPlants);
     } catch (error) {
       console.error("Unexpected error loading plants:", error);
       toast({
@@ -162,7 +201,12 @@ const PlantCollection = () => {
                       {getGrowthStageIcon(plant.growth_stage)}
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex gap-2">
+                    {plant.source === 'scan' && (
+                      <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                        Scan
+                      </Badge>
+                    )}
                     <Badge className={getHealthColor(plant.health_status)}>
                       {plant.health_status === "needs_attention" && (
                         <AlertCircle className="w-3 h-3 mr-1" />
@@ -181,6 +225,13 @@ const PlantCollection = () => {
                 </CardHeader>
 
                 <CardContent className="space-y-3">
+                  {plant.disease_detected && (
+                    <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+                      <AlertCircle className="w-4 h-4" />
+                      <span className="font-medium">{plant.disease_detected}</span>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <Droplet className="w-4 h-4 text-blue-500" />
@@ -195,9 +246,11 @@ const PlantCollection = () => {
                     </div>
                   )}
 
-                  <Badge variant="outline" className="capitalize">
-                    {getGrowthStageIcon(plant.growth_stage)} {plant.growth_stage}
-                  </Badge>
+                  {plant.growth_stage && plant.growth_stage !== "unknown" && (
+                    <Badge variant="outline" className="capitalize">
+                      {getGrowthStageIcon(plant.growth_stage)} {plant.growth_stage}
+                    </Badge>
+                  )}
                 </CardContent>
               </Card>
             </div>
