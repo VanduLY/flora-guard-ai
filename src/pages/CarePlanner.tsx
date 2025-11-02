@@ -75,14 +75,14 @@ const CarePlanner = () => {
       <PerpetualBackground />
       
       <div className="relative z-10 container mx-auto px-4 py-8">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="show"
-          className="max-w-7xl mx-auto"
-        >
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <motion.div variants={fadeInUp} className="mb-8 flex items-center justify-between">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8 flex items-center justify-between"
+          >
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -104,7 +104,11 @@ const CarePlanner = () => {
           </motion.div>
 
           {/* Tabs Navigation */}
-          <motion.div variants={fadeInUp}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
                 <TabsTrigger value="plants" className="gap-2">
@@ -152,7 +156,7 @@ const CarePlanner = () => {
               </div>
             </Tabs>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );
