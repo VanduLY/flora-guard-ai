@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Plus, Heart, AlertCircle, Droplet, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AddPlantDialog from "./AddPlantDialog";
 import PlantDetailsDialog from "./PlantDetailsDialog";
-import { fadeInUp, staggerContainer } from "@/lib/motion-config";
 
 interface Plant {
   id: string;
@@ -110,14 +108,9 @@ const PlantCollection = () => {
   }
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="show"
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div variants={fadeInUp} className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">My Plant Collection</h2>
           <p className="text-muted-foreground">Manage your green family</p>
@@ -129,11 +122,11 @@ const PlantCollection = () => {
           <Plus className="w-4 h-4" />
           Add Plant
         </Button>
-      </motion.div>
+      </div>
 
       {/* Plants Grid */}
       {plants.length === 0 ? (
-        <motion.div variants={fadeInUp}>
+        <div>
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Droplet className="w-16 h-16 text-muted-foreground mb-4" />
@@ -147,16 +140,11 @@ const PlantCollection = () => {
               </Button>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plants.map((plant) => (
-            <motion.div
-              key={plant.id}
-              variants={fadeInUp}
-              whileHover={{ scale: 1.02, y: -4 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div key={plant.id}>
               <Card
                 className="overflow-hidden cursor-pointer group hover:shadow-lg transition-all"
                 onClick={() => setSelectedPlant(plant)}
@@ -212,7 +200,7 @@ const PlantCollection = () => {
                   </Badge>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
@@ -231,7 +219,7 @@ const PlantCollection = () => {
           onUpdate={loadPlants}
         />
       )}
-    </motion.div>
+    </div>
   );
 };
 

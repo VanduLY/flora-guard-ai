@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -109,20 +108,9 @@ const ScanDetail = () => {
   };
 
   return (
-    <motion.div 
-      className="min-h-screen bg-background"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <motion.div 
-        className="bg-card border-b border-border sticky top-0 z-50"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.45, 0, 0.55, 1] }}
-      >
+      <div className="bg-card border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button onClick={() => navigate("/detect")} variant="outline" className="gap-2">
@@ -144,43 +132,30 @@ const ScanDetail = () => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-6xl mx-auto space-y-6"
-        >
+        <div className="max-w-6xl mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Results */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+            <div>
               <KanDiseaseResults result={resultData} isAnalyzing={false} />
-            </motion.div>
+            </div>
 
             {/* Recovery Timeline */}
             {scan.disease_detected && (
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
+              <div>
                 <KanRecoveryTimeline
                   diseaseType={scan.disease_detected}
                   severity={getSeverity()}
                 />
-              </motion.div>
+              </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
