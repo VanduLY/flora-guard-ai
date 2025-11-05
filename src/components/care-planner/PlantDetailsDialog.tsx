@@ -9,6 +9,7 @@ import {
   Droplet, Sun, Thermometer, MapPin, Heart,
   Edit, Trash2, CheckCircle2
 } from "lucide-react";
+import PhotoTimeline from "./PhotoTimeline";
 
 interface Plant {
   id: string;
@@ -186,13 +187,7 @@ const PlantDetailsDialog = ({ plant, onClose, onUpdate }: PlantDetailsDialogProp
           </TabsContent>
 
           <TabsContent value="growth">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center py-8">
-                  Growth timeline coming soon! 📈
-                </p>
-              </CardContent>
-            </Card>
+            <PhotoTimeline plantId={plant.id} plantName={plant.nickname} />
           </TabsContent>
         </Tabs>
 
