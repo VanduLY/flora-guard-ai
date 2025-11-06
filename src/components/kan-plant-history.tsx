@@ -540,11 +540,21 @@ const KanPlantHistory = () => {
 
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="hover:bg-accent/50 transition-colors"
+                            >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-card">
+                          <DropdownMenuContent 
+                            align="end" 
+                            side="bottom"
+                            sideOffset={6}
+                            alignOffset={0}
+                            className="w-48"
+                          >
                             <DropdownMenuItem 
                               onClick={() => {
                                 setEditingId(scan.id);
@@ -560,7 +570,7 @@ const KanPlantHistory = () => {
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
-                              className="text-destructive"
+                              className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10 hover:text-destructive focus:text-destructive"
                               onClick={() => {
                                 setScanToDelete(scan.id);
                                 setDeleteDialogOpen(true);
