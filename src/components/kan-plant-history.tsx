@@ -523,7 +523,7 @@ const KanPlantHistory = () => {
                       </div>
                       
                       {/* Actions */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 relative">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -538,12 +538,12 @@ const KanPlantHistory = () => {
                           {new Date(scan.created_at).toLocaleDateString()}
                         </div>
 
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="hover:bg-accent/50 transition-colors"
+                              className="hover:bg-accent/50 transition-colors relative"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
@@ -551,7 +551,7 @@ const KanPlantHistory = () => {
                           <DropdownMenuContent 
                             align="end" 
                             side="bottom"
-                            sideOffset={6}
+                            sideOffset={4}
                             alignOffset={0}
                             className="w-48"
                           >
