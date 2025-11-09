@@ -538,12 +538,11 @@ const KanPlantHistory = () => {
                           {new Date(scan.created_at).toLocaleDateString()}
                         </div>
 
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button 
                               variant="ghost" 
-                              size="sm" 
-                              className="hover:bg-accent/50 transition-colors"
+                              size="sm"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
@@ -551,7 +550,7 @@ const KanPlantHistory = () => {
                           <DropdownMenuContent 
                             align="end" 
                             side="bottom"
-                            sideOffset={8}
+                            sideOffset={4}
                             className="w-48"
                           >
                             <DropdownMenuItem 
