@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import CareCalendar from "@/components/care-planner/CareCalendar";
 
 const CareGuide = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const CareGuide = () => {
           Back to Dashboard
         </Button>
         <h1 className="text-4xl font-bold mb-6">Care Guide</h1>
-        <p className="text-muted-foreground">Plant care guide coming soon...</p>
+        <CareCalendar />
       </div>
     </div>
   );
