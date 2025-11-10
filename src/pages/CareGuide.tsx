@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import KanApp from "@/components/kan-App";
 
-interface PlantDetectionProps {
-  defaultTab?: "upload" | "camera" | "history";
-}
-
-const PlantDetection = ({ defaultTab = "upload" }: PlantDetectionProps) => {
+const CareGuide = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
@@ -47,9 +42,12 @@ const PlantDetection = ({ defaultTab = "upload" }: PlantDetectionProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      <KanApp defaultTab={defaultTab} />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-6">Care Guide</h1>
+        <p className="text-muted-foreground">Plant care guide coming soon...</p>
+      </div>
     </div>
   );
 };
 
-export default PlantDetection;
+export default CareGuide;

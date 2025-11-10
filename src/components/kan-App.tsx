@@ -15,11 +15,15 @@ import KanWeatherAlerts from "./kan-weather-alerts";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
-const KanApp = () => {
+interface KanAppProps {
+  defaultTab?: "upload" | "camera" | "history";
+}
+
+const KanApp = ({ defaultTab = "upload" }: KanAppProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile } = useUser();
-  const [activeTab, setActiveTab] = useState<"upload" | "camera" | "history">("upload");
+  const [activeTab, setActiveTab] = useState<"upload" | "camera" | "history">(defaultTab);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
