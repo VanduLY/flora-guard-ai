@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const CareGuide = () => {
   const navigate = useNavigate();
@@ -43,6 +45,14 @@ const CareGuide = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        <Button 
+          onClick={() => navigate("/dashboard")} 
+          variant="outline" 
+          className="mb-6 flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Dashboard
+        </Button>
         <h1 className="text-4xl font-bold mb-6">Care Guide</h1>
         <p className="text-muted-foreground">Plant care guide coming soon...</p>
       </div>
