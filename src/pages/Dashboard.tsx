@@ -268,7 +268,7 @@ const Dashboard = () => {
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
               >
-                <Button size="lg" variant="outline" onClick={() => navigate("/detect")} className="gap-2">
+                <Button size="lg" variant="outline" onClick={() => navigate("/history")} className="gap-2">
                   <History className="w-5 h-5" />
                   View History
                 </Button>
@@ -278,7 +278,7 @@ const Dashboard = () => {
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
               >
-                <Button size="lg" variant="outline" onClick={() => navigate("/detect")} className="gap-2">
+                <Button size="lg" variant="outline" onClick={() => navigate("/careguide")} className="gap-2">
                   <BookOpen className="w-5 h-5" />
                   Care Guide
                 </Button>
@@ -324,7 +324,7 @@ const Dashboard = () => {
               >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
-                  onClick={() => navigate("/detect")}
+                  onClick={() => navigate("/history")}
                 >
                 <CardHeader>
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
@@ -346,7 +346,7 @@ const Dashboard = () => {
               >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
-                  onClick={() => navigate("/detect")}
+                  onClick={() => navigate("/careguide")}
                 >
                 <CardHeader>
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
@@ -368,7 +368,7 @@ const Dashboard = () => {
               >
                 <Card 
                   className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
-                  onClick={() => navigate("/detect")}
+                  onClick={() => navigate("/recoverytracker")}
                 >
                 <CardHeader>
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
