@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import PerpetualBackground from "@/components/PerpetualBackground";
 import { staggerContainer, fadeInUp } from "@/components/PageTransition";
 import { DURATIONS, EASINGS, SPRINGS } from "@/lib/motion-config";
+import { CarbonFootprintDashboard } from "@/components/carbon/CarbonFootprintDashboard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Dashboard = () => {
     needsCare: 0,
   });
   const [recentScans, setRecentScans] = useState<any[]>([]);
+  const [carbonTrackingEnabled, setCarbonTrackingEnabled] = useState(false);
 
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, amount: 0.1 });
@@ -56,6 +58,17 @@ const Dashboard = () => {
       // Use profile from context if available
       const displayName = profile?.full_name || profile?.username || session.user.email?.split("@")[0] || "User";
       setUserName(displayName);
+
+      // Check carbon tracking preference
+      const { data: preferences } = await supabase
+        .from("user_care_preferences")
+        .select("carbon_tracking_enabled")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (preferences) {
+        setCarbonTrackingEnabled(preferences.carbon_tracking_enabled || false);
+      }
 
       // Get scan statistics with error handling
       const { data: scans, error: scansError } = await supabase
@@ -405,6 +418,18 @@ const Dashboard = () => {
               </motion.div>
             </div>
           </motion.div>
+
+          {/* Carbon Footprint Tracker */}
+          {carbonTrackingEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="mb-8"
+            >
+              <CarbonFootprintDashboard />
+            </motion.div>
+          )}
 
           {/* Recent Activity */}
           {recentScans.length > 0 && (
