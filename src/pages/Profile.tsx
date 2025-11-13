@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/contexts/UserContext";
 import { compressImage } from "@/lib/imageCompression";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CarbonSettings } from "@/components/carbon/CarbonSettings";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -566,6 +567,15 @@ const Profile = () => {
               </Button>
             </form>
           </Card>
+          </motion.div>
+
+          {/* Carbon Tracking Settings */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <CarbonSettings />
           </motion.div>
         </motion.div>
       </div>
