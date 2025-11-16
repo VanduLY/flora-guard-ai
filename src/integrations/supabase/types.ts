@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_definitions: {
+        Row: {
+          achievement_type: string
+          color: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          requirement_count: number | null
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          achievement_type: string
+          color: string
+          created_at?: string
+          description: string
+          icon: string
+          id: string
+          requirement_count?: number | null
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          achievement_type?: string
+          color?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          requirement_count?: number | null
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       carbon_activities: {
         Row: {
           activity_type: string
@@ -579,6 +615,57 @@ export type Database = {
           updated_at?: string
           user_id?: string
           water_frequency_days?: number | null
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          achievements_earned: number
+          created_at: string
+          current_streak_days: number
+          diseases_treated: number
+          id: string
+          last_activity_date: string | null
+          level: number
+          longest_streak_days: number
+          perfect_weeks: number
+          plants_added: number
+          tasks_completed: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements_earned?: number
+          created_at?: string
+          current_streak_days?: number
+          diseases_treated?: number
+          id?: string
+          last_activity_date?: string | null
+          level?: number
+          longest_streak_days?: number
+          perfect_weeks?: number
+          plants_added?: number
+          tasks_completed?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements_earned?: number
+          created_at?: string
+          current_streak_days?: number
+          diseases_treated?: number
+          id?: string
+          last_activity_date?: string | null
+          level?: number
+          longest_streak_days?: number
+          perfect_weeks?: number
+          plants_added?: number
+          tasks_completed?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
