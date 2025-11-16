@@ -1,22 +1,43 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Award, Star, Target, Zap } from "lucide-react";
+import { Trophy, Zap } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion-config";
+import { useGamification } from "@/hooks/useGamification";
+import * as LucideIcons from "lucide-react";
+import LevelProgressBar from "./LevelProgressBar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const AchievementsDashboard = () => {
-  const achievements = [
-    { id: 1, icon: Trophy, title: "First Bloom", description: "Witnessed your first flowering", earned: true, color: "text-yellow-500" },
-    { id: 2, icon: Zap, title: "30-Day Streak", description: "Consistent care for 30 days", earned: true, color: "text-orange-500" },
-    { id: 3, icon: Star, title: "Perfect Week", description: "Completed all tasks on time", earned: false, color: "text-purple-500" },
-    { id: 4, icon: Target, title: "Pest Defender", description: "Successfully treated plant disease", earned: false, color: "text-green-500" },
-    { id: 5, icon: Award, title: "Green Thumb", description: "Maintained 10 healthy plants", earned: false, color: "text-blue-500" },
-  ];
+  const { achievements, definitions, stats, loading } = useGamification();
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-32 w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Get earned achievement IDs
+  const earnedIds = achievements.map(a => a.achievement_type || a.title.toLowerCase().replace(/\s+/g, '_'));
+
+  // Generate insights based on actual stats
   const weeklyInsights = [
-    "🌱 Your Monstera grew 2 new leaves this week!",
-    "💧 Perfect watering schedule maintained",
-    "☀️ Optimal sunlight hours achieved for all plants",
+    stats && stats.tasks_completed > 0 
+      ? `✅ Completed ${stats.tasks_completed} care tasks!` 
+      : "🌱 Start completing tasks to track progress",
+    stats && stats.current_streak_days > 0 
+      ? `🔥 ${stats.current_streak_days} day streak - keep it going!` 
+      : "💪 Build a streak by caring for your plants daily",
+    stats && stats.plants_added > 0 
+      ? `🪴 Managing ${stats.plants_added} plants in your collection` 
+      : "🌿 Add your first plant to get started",
   ];
 
   return (
@@ -31,6 +52,11 @@ const AchievementsDashboard = () => {
         <p className="text-muted-foreground">
           Celebrate your plant care journey with badges and insights
         </p>
+      </motion.div>
+
+      {/* Level Progress */}
+      <motion.div variants={fadeInUp}>
+        <LevelProgressBar />
       </motion.div>
 
       {/* Weekly Insights */}
@@ -55,37 +81,51 @@ const AchievementsDashboard = () => {
 
       {/* Achievements Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {achievements.map((achievement) => (
-          <motion.div
-            key={achievement.id}
-            variants={fadeInUp}
-            whileHover={{ scale: 1.05, y: -4 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Card className={`relative overflow-hidden ${!achievement.earned && 'opacity-50'}`}>
-              {achievement.earned && (
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-500/20 to-transparent" />
-              )}
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className={`p-4 rounded-full ${achievement.earned ? 'bg-primary/20' : 'bg-muted'}`}>
-                    <achievement.icon className={`w-8 h-8 ${achievement.earned ? achievement.color : 'text-muted-foreground'}`} />
+        {definitions.map((definition) => {
+          const isEarned = earnedIds.includes(definition.id);
+          const IconComponent = (LucideIcons as any)[definition.icon] || Trophy;
+          
+          return (
+            <motion.div
+              key={definition.id}
+              variants={fadeInUp}
+              whileHover={{ scale: isEarned ? 1.05 : 1.02, y: -4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className={`relative overflow-hidden ${!isEarned && 'opacity-50'}`}>
+                {isEarned && (
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-500/20 to-transparent" />
+                )}
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className={`p-4 rounded-full ${isEarned ? 'bg-primary/20' : 'bg-muted'}`}>
+                      <IconComponent className={`w-8 h-8 ${isEarned ? definition.color : 'text-muted-foreground'}`} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-1">{definition.title}</h3>
+                      <p className="text-sm text-muted-foreground">{definition.description}</p>
+                      {definition.requirement_count && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Requires: {definition.requirement_count}x
+                        </p>
+                      )}
+                    </div>
+                    {isEarned ? (
+                      <Badge variant="secondary" className="gap-1">
+                        <Trophy className="w-3 h-3" />
+                        +{definition.xp_reward} XP
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="gap-1">
+                        {definition.xp_reward} XP
+                      </Badge>
+                    )}
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">{achievement.title}</h3>
-                    <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                  </div>
-                  {achievement.earned && (
-                    <Badge variant="secondary" className="gap-1">
-                      <Trophy className="w-3 h-3" />
-                      Earned
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Progress Stats */}
@@ -95,18 +135,22 @@ const AchievementsDashboard = () => {
             <CardTitle>Your Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">5</div>
-                <p className="text-sm text-muted-foreground">Achievements Earned</p>
+                <div className="text-3xl font-bold text-primary mb-2">{stats?.achievements_earned || 0}</div>
+                <p className="text-sm text-muted-foreground">Achievements</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-500 mb-2">89%</div>
-                <p className="text-sm text-muted-foreground">Task Completion Rate</p>
+                <div className="text-3xl font-bold text-blue-500 mb-2">{stats?.tasks_completed || 0}</div>
+                <p className="text-sm text-muted-foreground">Tasks Completed</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-500 mb-2">30</div>
-                <p className="text-sm text-muted-foreground">Day Streak</p>
+                <div className="text-3xl font-bold text-orange-500 mb-2">{stats?.longest_streak_days || 0}</div>
+                <p className="text-sm text-muted-foreground">Longest Streak</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-500 mb-2">{stats?.plants_added || 0}</div>
+                <p className="text-sm text-muted-foreground">Plants Added</p>
               </div>
             </div>
           </CardContent>

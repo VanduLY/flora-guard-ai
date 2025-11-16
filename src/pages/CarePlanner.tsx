@@ -13,6 +13,10 @@ import HealthMonitor from "@/components/care-planner/HealthMonitor";
 import AchievementsDashboard from "@/components/care-planner/AchievementsDashboard";
 import GrowthTimeline from "@/components/care-planner/GrowthTimeline";
 import { fadeInUp, staggerContainer, DURATIONS, EASINGS } from "@/lib/motion-config";
+import { GamificationProvider } from "@/contexts/GamificationContext";
+import { TaskCompletionHandler } from "@/components/care-planner/TaskCompletionHandler";
+import { PlantAdditionHandler } from "@/components/care-planner/PlantAdditionHandler";
+import { MilestoneHandler } from "@/components/care-planner/MilestoneHandler";
 
 const CarePlanner = () => {
   const navigate = useNavigate();
@@ -65,16 +69,20 @@ const CarePlanner = () => {
   }
 
   return (
-    <motion.div
-      className="min-h-screen relative"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: DURATIONS.smooth, ease: EASINGS.butter }}
-    >
-      <PerpetualBackground />
-      
-      <div className="relative z-10 container mx-auto px-4 py-8">
+    <GamificationProvider>
+      <TaskCompletionHandler />
+      <PlantAdditionHandler />
+      <MilestoneHandler />
+      <motion.div
+        className="min-h-screen relative"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: DURATIONS.smooth, ease: EASINGS.butter }}
+      >
+        <PerpetualBackground />
+        
+        <div className="relative z-10 container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div 
@@ -159,6 +167,7 @@ const CarePlanner = () => {
         </div>
       </div>
     </motion.div>
+    </GamificationProvider>
   );
 };
 
