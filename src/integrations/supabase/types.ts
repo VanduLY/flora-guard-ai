@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      carbon_activities: {
+        Row: {
+          activity_type: string
+          co2_emissions: number
+          created_at: string
+          id: string
+          notes: string | null
+          plant_id: string | null
+          quantity: number | null
+          unit: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          co2_emissions?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plant_id?: string | null
+          quantity?: number | null
+          unit?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          co2_emissions?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plant_id?: string | null
+          quantity?: number | null
+          unit?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carbon_activities_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "user_plants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carbon_footprint_summary: {
+        Row: {
+          created_at: string
+          fertilizer_emissions: number | null
+          id: string
+          maintenance_emissions: number | null
+          period_end: string
+          period_start: string
+          sensor_emissions: number | null
+          total_emissions: number
+          updated_at: string
+          user_id: string
+          watering_emissions: number | null
+        }
+        Insert: {
+          created_at?: string
+          fertilizer_emissions?: number | null
+          id?: string
+          maintenance_emissions?: number | null
+          period_end: string
+          period_start: string
+          sensor_emissions?: number | null
+          total_emissions?: number
+          updated_at?: string
+          user_id: string
+          watering_emissions?: number | null
+        }
+        Update: {
+          created_at?: string
+          fertilizer_emissions?: number | null
+          id?: string
+          maintenance_emissions?: number | null
+          period_end?: string
+          period_start?: string
+          sensor_emissions?: number | null
+          total_emissions?: number
+          updated_at?: string
+          user_id?: string
+          watering_emissions?: number | null
+        }
+        Relationships: []
+      }
       care_schedules: {
         Row: {
           auto_adjust_weather: boolean | null
@@ -394,6 +480,7 @@ export type Database = {
       user_care_preferences: {
         Row: {
           auto_adjust_schedules: boolean | null
+          carbon_tracking_enabled: boolean | null
           created_at: string
           email_reminders: boolean | null
           id: string
@@ -407,6 +494,7 @@ export type Database = {
         }
         Insert: {
           auto_adjust_schedules?: boolean | null
+          carbon_tracking_enabled?: boolean | null
           created_at?: string
           email_reminders?: boolean | null
           id?: string
@@ -420,6 +508,7 @@ export type Database = {
         }
         Update: {
           auto_adjust_schedules?: boolean | null
+          carbon_tracking_enabled?: boolean | null
           created_at?: string
           email_reminders?: boolean | null
           id?: string
