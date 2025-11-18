@@ -7,7 +7,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.calculate-carbon-footprint]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-plant-notification]
 verify_jwt = false
