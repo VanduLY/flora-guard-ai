@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sprout, Calendar, Activity, Trophy, TrendingUp } from "lucide-react";
+import { ArrowLeft, Sprout, Calendar, Activity, Trophy, TrendingUp, Sparkles } from "lucide-react";
 import PerpetualBackground from "@/components/PerpetualBackground";
 import PlantCollection from "@/components/care-planner/PlantCollection";
 import CareCalendar from "@/components/care-planner/CareCalendar";
 import HealthMonitor from "@/components/care-planner/HealthMonitor";
 import AchievementsDashboard from "@/components/care-planner/AchievementsDashboard";
 import GrowthTimeline from "@/components/care-planner/GrowthTimeline";
+import { NotificationDemo } from "@/components/care-planner/NotificationDemo";
 import { fadeInUp, staggerContainer, DURATIONS, EASINGS } from "@/lib/motion-config";
 import { GamificationProvider } from "@/contexts/GamificationContext";
 import { TaskCompletionHandler } from "@/components/care-planner/TaskCompletionHandler";
@@ -118,7 +119,7 @@ const CarePlanner = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+              <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
                 <TabsTrigger value="plants" className="gap-2">
                   <Sprout className="w-4 h-4" />
                   <span className="hidden sm:inline">Plants</span>
@@ -139,6 +140,10 @@ const CarePlanner = () => {
                   <Trophy className="w-4 h-4" />
                   <span className="hidden sm:inline">Rewards</span>
                 </TabsTrigger>
+                <TabsTrigger value="notifications" className="gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="hidden sm:inline">Notifications</span>
+                </TabsTrigger>
               </TabsList>
 
               <div className="mt-8">
@@ -158,9 +163,13 @@ const CarePlanner = () => {
                   <GrowthTimeline />
                 </TabsContent>
 
-                <TabsContent value="achievements" className="space-y-6">
-                  <AchievementsDashboard />
-                </TabsContent>
+          <TabsContent value="achievements" className="space-y-6">
+            <AchievementsDashboard />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-6">
+            <NotificationDemo />
+          </TabsContent>
               </div>
             </Tabs>
           </motion.div>
