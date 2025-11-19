@@ -5,13 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sprout, Calendar, Activity, Trophy, TrendingUp, Sparkles } from "lucide-react";
+import { ArrowLeft, Sprout, Calendar, Trophy, Sparkles } from "lucide-react";
 import PerpetualBackground from "@/components/PerpetualBackground";
 import PlantCollection from "@/components/care-planner/PlantCollection";
 import CareCalendar from "@/components/care-planner/CareCalendar";
-import HealthMonitor from "@/components/care-planner/HealthMonitor";
 import AchievementsDashboard from "@/components/care-planner/AchievementsDashboard";
-import GrowthTimeline from "@/components/care-planner/GrowthTimeline";
 import { NotificationDemo } from "@/components/care-planner/NotificationDemo";
 import { fadeInUp, staggerContainer, DURATIONS, EASINGS } from "@/lib/motion-config";
 import { GamificationProvider } from "@/contexts/GamificationContext";
@@ -147,14 +145,13 @@ const CarePlanner = () => {
                   <CareCalendar />
                 </TabsContent>
 
+                <TabsContent value="achievements" className="space-y-6">
+                  <AchievementsDashboard />
+                </TabsContent>
 
-          <TabsContent value="achievements" className="space-y-6">
-            <AchievementsDashboard />
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-6">
-            <NotificationDemo />
-          </TabsContent>
+                <TabsContent value="notifications" className="space-y-6">
+                  <NotificationDemo />
+                </TabsContent>
               </div>
             </Tabs>
           </motion.div>
