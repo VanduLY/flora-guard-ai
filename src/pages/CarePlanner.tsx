@@ -119,7 +119,7 @@ const CarePlanner = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+              <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
                 <TabsTrigger value="plants" className="gap-2">
                   <Sprout className="w-4 h-4" />
                   <span className="hidden sm:inline">Plants</span>
@@ -127,14 +127,6 @@ const CarePlanner = () => {
                 <TabsTrigger value="calendar" className="gap-2">
                   <Calendar className="w-4 h-4" />
                   <span className="hidden sm:inline">Calendar</span>
-                </TabsTrigger>
-                <TabsTrigger value="health" className="gap-2">
-                  <Activity className="w-4 h-4" />
-                  <span className="hidden sm:inline">Health</span>
-                </TabsTrigger>
-                <TabsTrigger value="growth" className="gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">Growth</span>
                 </TabsTrigger>
                 <TabsTrigger value="achievements" className="gap-2">
                   <Trophy className="w-4 h-4" />
@@ -155,13 +147,6 @@ const CarePlanner = () => {
                   <CareCalendar />
                 </TabsContent>
 
-                <TabsContent value="health" className="space-y-6">
-                  <HealthMonitor />
-                </TabsContent>
-
-                <TabsContent value="growth" className="space-y-6">
-                  <GrowthTimeline />
-                </TabsContent>
 
           <TabsContent value="achievements" className="space-y-6">
             <AchievementsDashboard />
