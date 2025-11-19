@@ -151,7 +151,7 @@ const PlantCollection = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">My Plant Collection</h2>
+          <h2 className="text-2xl font-bold text-foreground">My Plant Collection</h2>
           <p className="text-muted-foreground">Manage your green family</p>
         </div>
         <Button
@@ -165,21 +165,19 @@ const PlantCollection = () => {
 
       {/* Plants Grid */}
       {plants.length === 0 ? (
-        <div>
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Droplet className="w-16 h-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No plants yet</h3>
-              <p className="text-muted-foreground mb-6 text-center">
-                Start your plant care journey by adding your first plant!
-              </p>
-              <Button onClick={() => setShowAddDialog(true)} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Add Your First Plant
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="border-dashed border-2 bg-card">
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="text-6xl mb-4">🌱</div>
+            <h3 className="text-2xl font-bold mb-2 text-foreground">No plants yet</h3>
+            <p className="text-muted-foreground mb-6 text-center max-w-md">
+              Start your plant care journey by adding your first plant! Track growth, set reminders, and watch your green family flourish.
+            </p>
+            <Button onClick={() => setShowAddDialog(true)} className="gap-2" size="lg">
+              <Plus className="w-4 h-4" />
+              Add Your First Plant
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plants.map((plant) => (

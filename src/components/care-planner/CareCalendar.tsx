@@ -211,7 +211,7 @@ const CareCalendar = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Smart Care Calendar</h2>
+          <h2 className="text-2xl font-bold text-foreground">Smart Care Calendar</h2>
           <p className="text-muted-foreground">
             AI-powered care schedules adapted to weather and plant needs
           </p>
@@ -230,8 +230,32 @@ const CareCalendar = () => {
         </div>
       </div>
 
-      {/* Weather Card */}
-      {weather && (
+      {/* If no tasks, show getting started */}
+      {tasks.length === 0 && !loading ? (
+        <Card className="border-dashed border-2 bg-card">
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4">
+            <CalendarDays className="w-16 h-16 text-primary mb-4" />
+            <h3 className="text-2xl font-bold mb-2 text-foreground">Your calendar is empty</h3>
+            <p className="text-muted-foreground mb-6 text-center max-w-md">
+              Create your first care task to start building a schedule for your plants. Add watering reminders, fertilizing schedules, and more!
+            </p>
+            <Button 
+              onClick={() => {
+                setSelectedTask(null);
+                setShowTaskDialog(true);
+              }} 
+              className="gap-2" 
+              size="lg"
+            >
+              <Plus className="w-4 h-4" />
+              Create First Task
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* Weather Card */}
+          {weather && (
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -258,32 +282,32 @@ const CareCalendar = () => {
               </div>
             )}
           </CardContent>
-        </Card>
-      )}
+          </Card>
+        )}
 
-      {/* Smart Suggestions */}
-      <SmartScheduleSuggestions 
-        weather={weather} 
-        onScheduleCreated={loadTasks}
-      />
+        {/* Smart Suggestions */}
+        <SmartScheduleSuggestions 
+          weather={weather} 
+          onScheduleCreated={loadTasks}
+        />
 
-      {/* Filters */}
-      <TaskFilters filters={filters} onFiltersChange={setFilters} />
+        {/* Filters */}
+        <TaskFilters filters={filters} onFiltersChange={setFilters} />
 
-      <Tabs defaultValue="calendar" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="today">
-            Today {getTodaysTasks().length > 0 && `(${getTodaysTasks().length})`}
-          </TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="overdue">
-            Overdue {getOverdueTasks().length > 0 && `(${getOverdueTasks().length})`}
-          </TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="calendar" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="today">
+              Today {getTodaysTasks().length > 0 && `(${getTodaysTasks().length})`}
+            </TabsTrigger>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="overdue">
+              Overdue {getOverdueTasks().length > 0 && `(${getOverdueTasks().length})`}
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Calendar View */}
-        <TabsContent value="calendar" className="space-y-4">
+          {/* Calendar View */}
+          <TabsContent value="calendar" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-2">
               <CardHeader>
@@ -397,6 +421,8 @@ const CareCalendar = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      </>
+      )}
 
       {/* Task Dialog */}
       <TaskDialog
