@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
-import { Camera, History, BookOpen, Activity, Leaf, Heart, AlertCircle, Scan, LogOut, User } from "lucide-react";
+import { Camera, History, Leaf, Heart, AlertCircle, Scan, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -286,16 +286,6 @@ const Dashboard = () => {
                   View History
                 </Button>
               </motion.div>
-              <motion.div 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
-              >
-                <Button size="lg" variant="outline" onClick={() => navigate("/careguide")} className="gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  Care Guide
-                </Button>
-              </motion.div>
             </div>
           </motion.div>
 
@@ -351,49 +341,7 @@ const Dashboard = () => {
               </Card>
               </motion.div>
 
-              <motion.div 
-                variants={fadeInUp}
-                whileHover={{ scale: 1.03, y: -6 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
-              >
-                <Card 
-                  className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
-                  onClick={() => navigate("/careguide")}
-                >
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-6 h-6 text-primary" />
-                  </div>
-                  <CardTitle>Care Guide</CardTitle>
-                  <CardDescription>
-                    Comprehensive plant care tips and disease information library
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-              </motion.div>
 
-              <motion.div 
-                variants={fadeInUp}
-                whileHover={{ scale: 1.03, y: -6 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: DURATIONS.micro, ease: EASINGS.butter }}
-              >
-                <Card 
-                  className="glass-morph hover:shadow-lg transition-all cursor-pointer group border-primary/20 hover:border-primary/40"
-                  onClick={() => navigate("/recoverytracker")}
-                >
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                    <Activity className="w-6 h-6 text-primary" />
-                  </div>
-                  <CardTitle>Recovery Tracker</CardTitle>
-                  <CardDescription>
-                    Monitor plant recovery progress with detailed timelines and care stages
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-              </motion.div>
 
               <motion.div 
                 variants={fadeInUp}
