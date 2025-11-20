@@ -12,6 +12,7 @@ import { useUser } from "@/contexts/UserContext";
 import { compressImage } from "@/lib/imageCompression";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CarbonSettings } from "@/components/carbon/CarbonSettings";
+import { EmailNotificationSettings } from "@/components/profile/EmailNotificationSettings";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -569,11 +570,20 @@ const Profile = () => {
           </Card>
           </motion.div>
 
-          {/* Carbon Tracking Settings */}
+          {/* Email Notification Settings */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <EmailNotificationSettings />
+          </motion.div>
+
+          {/* Carbon Tracking Settings */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
           >
             <CarbonSettings />
           </motion.div>
