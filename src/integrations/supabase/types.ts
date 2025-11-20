@@ -246,6 +246,36 @@ export type Database = {
           },
         ]
       }
+      email_logs: {
+        Row: {
+          email_type: string
+          id: string
+          metadata: Json | null
+          sent_at: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          email_type: string
+          id?: string
+          metadata?: Json | null
+          sent_at?: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          email_type?: string
+          id?: string
+          metadata?: Json | null
+          sent_at?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       growth_milestones: {
         Row: {
           created_at: string
@@ -555,6 +585,42 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weather_sync_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      user_email_preferences: {
+        Row: {
+          carbon_updates_enabled: boolean
+          care_reminders_enabled: boolean
+          created_at: string
+          daily_digest_enabled: boolean
+          email_enabled: boolean
+          health_alerts_enabled: boolean
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          carbon_updates_enabled?: boolean
+          care_reminders_enabled?: boolean
+          created_at?: string
+          daily_digest_enabled?: boolean
+          email_enabled?: boolean
+          health_alerts_enabled?: boolean
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          carbon_updates_enabled?: boolean
+          care_reminders_enabled?: boolean
+          created_at?: string
+          daily_digest_enabled?: boolean
+          email_enabled?: boolean
+          health_alerts_enabled?: boolean
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
