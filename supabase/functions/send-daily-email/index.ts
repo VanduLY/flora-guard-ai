@@ -251,12 +251,12 @@ serve(async (req) => {
 
         // Send email via Resend
         const { data, error } = await resend.emails.send({
-          from: "FloraGuard <notifications@floraguard.app>",
+         from: "FloraGuard <notifications@on.resend.dev>",
           to: [userEmail],
           subject: emailContent.subject,
           html: html,
         });
-
+from: "FloraGuard <notifications@on.resend.dev>"
         if (error) {
           console.error(`Failed to send to ${userEmail}:`, error);
           results.push({ email: userEmail, status: "failed", error: error.message });
