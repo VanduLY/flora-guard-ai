@@ -99,7 +99,7 @@ const Hero = () => {
             className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight gradient-text-reveal cinematic-float depth-layer-2 hero-title"
             variants={itemVariants}
           >
-            FloraGuard – Your Virtual Plant Caretaker
+            FloraGuard – Your Plant Caretaker
           </motion.h1>
           
           <motion.p 
