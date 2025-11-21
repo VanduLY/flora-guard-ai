@@ -139,7 +139,11 @@ const Dashboard = () => {
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <motion.div 
+              className="flex items-center gap-3 cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              onClick={() => navigate("/dashboard")}
+            >
               <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center overflow-hidden">
                 <img 
                   src="/favicon.ico" 
@@ -149,12 +153,26 @@ const Dashboard = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Flora Guard AI</h1>
-                <p className="text-sm text-muted-foreground">Plant Care Dashboard</p>
+                <p className="text-sm text-muted-foreground">AI-Powered Plant Protection</p>
               </div>
-            </div>
+            </motion.div>
+            
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button onClick={() => navigate("/profile")} variant="outline" className="flex items-center gap-2 px-2 pr-3">
+              <Button 
+                onClick={() => navigate("/dashboard")} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Leaf className="w-4 h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Button>
+              
+              <Button 
+                onClick={() => navigate("/profile")} 
+                variant="outline"
+                className="flex items-center gap-2 px-2 pr-3"
+              >
                 <Avatar className="w-8 h-8">
                   {profile?.avatar_url ? (
                     <AvatarImage src={profile.avatar_url} alt={profile.username || "User"} />
@@ -164,11 +182,16 @@ const Dashboard = () => {
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden sm:inline">
-                  {profile?.username || "Profile"}
+                  {profile?.username || userName}
                 </span>
               </Button>
-              <Button onClick={handleSignOut} variant="outline">
-                <LogOut className="w-4 h-4 mr-2" />
+              
+              <Button 
+                onClick={handleSignOut} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
