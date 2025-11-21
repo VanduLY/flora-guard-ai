@@ -14,7 +14,7 @@ const Footer = () => {
             </div>
             <div>
               <div className="font-bold text-xl text-foreground">FloraGuard</div>
-              <div className="text-sm text-muted-foreground">Virtual Plant Caretaker</div>
+              <div className="text-sm text-muted-foreground">Your Plant Caretaker</div>
             </div>
           </div>
 
