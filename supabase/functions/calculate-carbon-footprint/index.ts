@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const authHeader = req.headers.get('Authorization');
 
     if (!authHeader) {
@@ -39,11 +39,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create client with service role for admin operations
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-    
-    // Create client with user's auth token for user-specific operations
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    // Create client with user's auth token for authentication and user-specific operations
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
