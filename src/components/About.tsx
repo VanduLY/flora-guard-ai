@@ -70,8 +70,8 @@ const About = () => {
               <div>
                 <h3 className="text-2xl font-bold text-foreground mb-3">The Solution</h3>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-primary">FloraGuard</span> is an AI-powered 
-                  virtual plant caretaker that helps you nurture healthy, thriving plants. With 
+                  <span className="font-semibold text-primary">FloraGuard</span> is an AI-powered
+                  plant caretaker that helps you nurture healthy, thriving plants. With 
                   intelligent disease detection, personalized care schedules, weather integration, 
                   and gamification, we make plant care simple, engaging, and sustainable. Never 
                   forget to water again, detect problems early, and watch your green companions flourish.
