@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
-import { Camera, History, Leaf, Heart, AlertCircle, Scan, LogOut, User } from "lucide-react";
+import { Camera, History, Leaf, Heart, AlertCircle, Home, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -164,7 +164,7 @@ const Dashboard = () => {
                 variant="outline"
                 className="flex items-center gap-2"
               >
-                <Leaf className="w-4 h-4" />
+                <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
               </Button>
               
@@ -434,7 +434,7 @@ const Dashboard = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <Scan className="w-4 h-4 text-primary" />
+                            <Camera className="w-4 h-4 text-primary" />
                             <p className="font-semibold text-foreground">
                               {scan.disease_detected || "Health Check"}
                             </p>
