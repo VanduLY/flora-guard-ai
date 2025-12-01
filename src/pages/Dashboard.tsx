@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Camera, History, Leaf, Heart, AlertCircle, Home, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,9 +27,6 @@ const Dashboard = () => {
   });
   const [recentScans, setRecentScans] = useState<any[]>([]);
   const [carbonTrackingEnabled, setCarbonTrackingEnabled] = useState(false);
-
-  const headerRef = useRef(null);
-  const headerInView = useInView(headerRef, { once: true, amount: 0.1 });
 
   useEffect(() => {
     checkAuthAndLoadData();
@@ -131,11 +128,10 @@ const Dashboard = () => {
       
       {/* Header */}
       <motion.header 
-        ref={headerRef}
         className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border shadow-soft"
         initial={{ y: -100, opacity: 0 }}
-        animate={headerInView ? { y: 0, opacity: 1 } : {}}
-        transition={SPRINGS.butter}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100 }}
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
