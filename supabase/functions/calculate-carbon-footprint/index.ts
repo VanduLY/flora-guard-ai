@@ -39,16 +39,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create client with user's auth token for authentication and user-specific operations
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Create client for database operations
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    // Get the user from the JWT token
+    // Extract JWT token from Authorization header and verify it
+    const token = authHeader.replace('Bearer ', '');
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
       console.error('Auth error:', userError);
