@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +11,8 @@ import {
   Edit, Trash2, CheckCircle2
 } from "lucide-react";
 import PhotoTimeline from "./PhotoTimeline";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Plant {
   id: string;
@@ -33,6 +36,30 @@ interface PlantDetailsDialogProps {
 }
 
 const PlantDetailsDialog = ({ plant, onClose, onUpdate }: PlantDetailsDialogProps) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('user_plants')
+        .delete()
+        .eq('id', plant.id);
+
+      if (error) throw error;
+
+      toast.success("Plant deleted successfully");
+      onUpdate();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting plant:', error);
+      toast.error("Failed to delete plant");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const getGrowthStageIcon = (stage: string) => {
     switch (stage) {
       case "seedling": return "🌱";
@@ -198,7 +225,11 @@ const PlantDetailsDialog = ({ plant, onClose, onUpdate }: PlantDetailsDialogProp
             Edit Plant
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2 text-destructive hover:bg-destructive/10">
+            <Button 
+              variant="outline" 
+              className="gap-2 text-destructive hover:bg-destructive/10"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
               <Trash2 className="w-4 h-4" />
               Delete
             </Button>
@@ -206,6 +237,28 @@ const PlantDetailsDialog = ({ plant, onClose, onUpdate }: PlantDetailsDialogProp
           </div>
         </div>
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {plant.nickname}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this plant and all its associated data including care schedules, health logs, and milestones. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
