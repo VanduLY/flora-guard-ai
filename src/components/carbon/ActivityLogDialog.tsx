@@ -123,20 +123,20 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-card">
         <DialogHeader>
-          <DialogTitle>Log Care Activity</DialogTitle>
+          <DialogTitle className="text-foreground">Log Care Activity</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Plant Selection */}
           <div className="space-y-2">
-            <Label htmlFor="plant">Plant (Optional)</Label>
+            <Label htmlFor="plant" className="text-foreground">Plant (Optional)</Label>
             <Select value={formData.plantId} onValueChange={(value) => setFormData({ ...formData, plantId: value })}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background border-border text-foreground">
                 <SelectValue placeholder="Select a plant" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border z-[150]">
                 <SelectItem value="none">No specific plant</SelectItem>
                 {plants.map((plant) => (
                   <SelectItem key={plant.id} value={plant.id}>
@@ -149,16 +149,16 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
 
           {/* Activity Type */}
           <div className="space-y-2">
-            <Label htmlFor="activityType">Activity Type *</Label>
+            <Label htmlFor="activityType" className="text-foreground">Activity Type *</Label>
             <Select
               value={formData.activityType}
               onValueChange={(value) => setFormData({ ...formData, activityType: value })}
               required
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-background border-border text-foreground">
                 <SelectValue placeholder="Select activity type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border z-[150]">
                 {ACTIVITY_TYPES.map((type) => {
                   const Icon = type.icon;
                   return (
@@ -176,7 +176,7 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
 
           {/* Quantity */}
           <div className="space-y-2">
-            <Label htmlFor="quantity">
+            <Label htmlFor="quantity" className="text-foreground">
               Quantity * {selectedActivity && `(${selectedActivity.unit})`}
             </Label>
             <Input
@@ -188,18 +188,20 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               placeholder="Enter quantity"
               required
+              className="bg-background border-border text-foreground"
             />
           </div>
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes" className="text-foreground">Notes</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               placeholder="Additional details..."
               rows={3}
+              className="bg-background border-border text-foreground"
             />
           </div>
 
