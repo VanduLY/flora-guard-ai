@@ -160,7 +160,7 @@ export const CarbonFootprintDashboard = () => {
       {/* Emissions Chart */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Monthly Emissions Trend</h3>
-        <EmissionsChart />
+        <EmissionsChart key={summary.total} />
       </Card>
 
       {/* Activity Log Dialog */}

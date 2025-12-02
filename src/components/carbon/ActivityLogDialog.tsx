@@ -89,7 +89,7 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
             activityType: formData.activityType,
             quantity: parseFloat(formData.quantity),
             unit: activityTypeData?.unit || '',
-            plantId: formData.plantId || null,
+            plantId: formData.plantId && formData.plantId !== 'none' ? formData.plantId : null,
             notes: formData.notes,
           },
         },
