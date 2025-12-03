@@ -30,15 +30,29 @@ const SmartScheduleSuggestions = ({ weather, onScheduleCreated }: SmartScheduleS
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get user's plants
-      const { data: plants, error: plantsError } = await supabase
-        .from("user_plants")
-        .select("*")
-        .eq("user_id", user.id);
+      // Get user's plants from both tables
+      const [userPlantsResult, scansResult] = await Promise.all([
+        supabase.from("user_plants").select("*").eq("user_id", user.id),
+        supabase.from("plant_scans").select("*").eq("user_id", user.id)
+      ]);
 
-      if (plantsError) throw plantsError;
+      // Combine plants from both sources
+      const userPlants = (userPlantsResult.data || []).map(p => ({
+        ...p,
+        source: 'user_plants'
+      }));
+      const scannedPlants = (scansResult.data || [])
+        .filter(s => s.plant_type)
+        .map(s => ({
+          id: s.id,
+          nickname: s.custom_name || s.plant_type || 'Unknown',
+          species: s.plant_type || 'Unknown',
+          source: 'plant_scans'
+        }));
+      
+      const plants = [...userPlants, ...scannedPlants];
 
-      if (!plants || plants.length === 0) {
+      if (plants.length === 0) {
         setSuggestions([]);
         return;
       }

@@ -81,14 +81,36 @@ const TaskDialog = ({ open, onClose, task, onSuccess }: TaskDialogProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("user_plants")
-        .select("id, nickname, species")
-        .eq("user_id", user.id)
-        .order("nickname");
+      // Load from both user_plants and plant_scans
+      const [userPlantsResult, scansResult] = await Promise.all([
+        supabase
+          .from("user_plants")
+          .select("id, nickname, species")
+          .eq("user_id", user.id)
+          .order("nickname"),
+        supabase
+          .from("plant_scans")
+          .select("id, custom_name, plant_type")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+      ]);
 
-      if (error) throw error;
-      setPlants(data || []);
+      const userPlants = (userPlantsResult.data || []).map(p => ({
+        ...p,
+        source: 'user_plants' as const
+      }));
+
+      // Convert scans to plant format, only include ones not already tracked
+      const scannedPlants = (scansResult.data || [])
+        .filter(scan => scan.plant_type) // Only include scans with identified plant type
+        .map(scan => ({
+          id: scan.id,
+          nickname: scan.custom_name || scan.plant_type || 'Unknown Plant',
+          species: scan.plant_type || 'Unknown',
+          source: 'plant_scans' as const
+        }));
+
+      setPlants([...userPlants, ...scannedPlants]);
     } catch (error) {
       console.error("Error loading plants:", error);
     }
@@ -108,12 +130,43 @@ const TaskDialog = ({ open, onClose, task, onSuccess }: TaskDialogProps) => {
 
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      let actualPlantId = formData.plant_id;
+
+      // Check if selected plant is from plant_scans and needs to be added to user_plants
+      const selectedPlant = plants.find(p => p.id === formData.plant_id);
+      if (selectedPlant?.source === 'plant_scans') {
+        // First, create a user_plant entry from the scan
+        const { data: newPlant, error: plantError } = await supabase
+          .from("user_plants")
+          .insert({
+            user_id: user.id,
+            nickname: selectedPlant.nickname,
+            species: selectedPlant.species,
+            health_status: 'healthy',
+            growth_stage: 'unknown',
+          })
+          .select()
+          .single();
+
+        if (plantError) throw plantError;
+        actualPlantId = newPlant.id;
+
+        toast({
+          title: "Plant added to collection",
+          description: `${selectedPlant.nickname} was added to your tracked plants`,
+        });
+      }
+
       if (task) {
         // Update existing task
         const { error } = await supabase
           .from("care_tasks")
           .update({
             ...formData,
+            plant_id: actualPlantId,
             due_date: formData.due_date.toISOString(),
           })
           .eq("id", task.id);
@@ -126,6 +179,7 @@ const TaskDialog = ({ open, onClose, task, onSuccess }: TaskDialogProps) => {
           .from("care_tasks")
           .insert({
             ...formData,
+            plant_id: actualPlantId,
             due_date: formData.due_date.toISOString(),
           });
 
@@ -166,11 +220,24 @@ const TaskDialog = ({ open, onClose, task, onSuccess }: TaskDialogProps) => {
                 <SelectValue placeholder="Select a plant" />
               </SelectTrigger>
               <SelectContent>
-                {plants.map((plant) => (
-                  <SelectItem key={plant.id} value={plant.id}>
-                    {plant.nickname} ({plant.species})
-                  </SelectItem>
-                ))}
+                {plants.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    No plants found. Add or scan plants first.
+                  </div>
+                ) : (
+                  plants.map((plant: any) => (
+                    <SelectItem key={plant.id} value={plant.id}>
+                      <div className="flex items-center gap-2">
+                        {plant.nickname} ({plant.species})
+                        {plant.source === 'plant_scans' && (
+                          <span className="text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                            Scan
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

@@ -42,14 +42,29 @@ const TaskFilters = ({ filters, onFiltersChange }: TaskFiltersProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("user_plants")
-        .select("id, nickname, species")
-        .eq("user_id", user.id)
-        .order("nickname");
+      // Load from both user_plants and plant_scans
+      const [userPlantsResult, scansResult] = await Promise.all([
+        supabase
+          .from("user_plants")
+          .select("id, nickname, species")
+          .eq("user_id", user.id)
+          .order("nickname"),
+        supabase
+          .from("plant_scans")
+          .select("id, custom_name, plant_type")
+          .eq("user_id", user.id)
+      ]);
 
-      if (error) throw error;
-      setPlants(data || []);
+      const userPlants = userPlantsResult.data || [];
+      const scannedPlants = (scansResult.data || [])
+        .filter(s => s.plant_type)
+        .map(s => ({
+          id: s.id,
+          nickname: s.custom_name || s.plant_type || 'Unknown',
+          species: s.plant_type || 'Unknown'
+        }));
+
+      setPlants([...userPlants, ...scannedPlants]);
     } catch (error) {
       console.error("Error loading plants:", error);
     }
