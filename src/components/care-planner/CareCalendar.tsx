@@ -1,12 +1,10 @@
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Plus, Cloud, TrendingUp, Filter } from "lucide-react";
-import { fadeInUp } from "@/lib/motion-config";
+import { CalendarDays, Plus, Cloud, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import TaskDialog from "./TaskDialog";
@@ -50,6 +48,7 @@ const CareCalendar = () => {
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [hasPlants, setHasPlants] = useState(false);
   const [filters, setFilters] = useState({
     plantId: null,
     taskType: null,
@@ -60,7 +59,24 @@ const CareCalendar = () => {
   useEffect(() => {
     loadTasks();
     loadWeather();
+    checkPlants();
   }, [date]);
+
+  const checkPlants = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { count } = await supabase
+        .from("user_plants")
+        .select("*", { count: 'exact', head: true })
+        .eq("user_id", user.id);
+
+      setHasPlants((count || 0) > 0);
+    } catch (error) {
+      console.error("Error checking plants:", error);
+    }
+  };
 
   const loadTasks = async () => {
     try {
@@ -178,7 +194,7 @@ const CareCalendar = () => {
   const getUpcomingTasks = () => {
     return tasks
       .filter((task) => new Date(task.due_date) > new Date() && task.status !== "completed")
-      .slice(0, 5);
+      .slice(0, 10);
   };
 
   const getOverdueTasks = () => {
@@ -201,13 +217,21 @@ const CareCalendar = () => {
     return filtered;
   };
 
+  // Get dates that have tasks for calendar highlighting
+  const getDatesWithTasks = () => {
+    return tasks.map(task => new Date(task.due_date));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <motion.div
-      variants={fadeInUp}
-      initial="hidden"
-      animate="show"
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -216,47 +240,34 @@ const CareCalendar = () => {
             AI-powered care schedules adapted to weather and plant needs
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => {
-              setSelectedTask(null);
-              setShowTaskDialog(true);
-            }}
-            className="gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Task
-          </Button>
-        </div>
+        <Button
+          onClick={() => {
+            setSelectedTask(null);
+            setShowTaskDialog(true);
+          }}
+          className="gap-2"
+          disabled={!hasPlants}
+        >
+          <Plus className="w-4 h-4" />
+          Add Task
+        </Button>
       </div>
 
-      {/* If no tasks, show getting started */}
-      {tasks.length === 0 && !loading ? (
-        <Card className="border-dashed border-2 bg-card">
-          <CardContent className="flex flex-col items-center justify-center py-16 px-4">
-            <CalendarDays className="w-16 h-16 text-primary mb-4" />
-            <h3 className="text-2xl font-bold mb-2 text-foreground">Your calendar is empty</h3>
-            <p className="text-muted-foreground mb-6 text-center max-w-md">
-              Create your first care task to start building a schedule for your plants. Add watering reminders, fertilizing schedules, and more!
+      {/* No Plants Warning */}
+      {!hasPlants && (
+        <Card className="border-yellow-500/50 bg-yellow-500/10">
+          <CardContent className="py-6 text-center">
+            <p className="text-foreground font-medium mb-2">No plants yet!</p>
+            <p className="text-muted-foreground text-sm">
+              Add plants in the "Plants" tab first, then you can create care tasks for them.
             </p>
-            <Button 
-              onClick={() => {
-                setSelectedTask(null);
-                setShowTaskDialog(true);
-              }} 
-              className="gap-2" 
-              size="lg"
-            >
-              <Plus className="w-4 h-4" />
-              Create First Task
-            </Button>
           </CardContent>
         </Card>
-      ) : (
-        <>
-          {/* Weather Card */}
-          {weather && (
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
+      )}
+
+      {/* Weather Card */}
+      {weather && (
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -282,37 +293,40 @@ const CareCalendar = () => {
               </div>
             )}
           </CardContent>
-          </Card>
-        )}
+        </Card>
+      )}
 
-        {/* Smart Suggestions */}
+      {/* Smart Suggestions */}
+      {hasPlants && (
         <SmartScheduleSuggestions 
           weather={weather} 
           onScheduleCreated={loadTasks}
         />
+      )}
 
-        {/* Filters */}
-        <TaskFilters filters={filters} onFiltersChange={setFilters} />
+      {/* Filters */}
+      {hasPlants && <TaskFilters filters={filters} onFiltersChange={setFilters} />}
 
-        <Tabs defaultValue="calendar" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            <TabsTrigger value="today">
-              Today {getTodaysTasks().length > 0 && `(${getTodaysTasks().length})`}
-            </TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="overdue">
-              Overdue {getOverdueTasks().length > 0 && `(${getOverdueTasks().length})`}
-            </TabsTrigger>
-          </TabsList>
+      {/* Main Calendar UI */}
+      <Tabs defaultValue="calendar" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="today">
+            Today {getTodaysTasks().length > 0 && `(${getTodaysTasks().length})`}
+          </TabsTrigger>
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="overdue">
+            Overdue {getOverdueTasks().length > 0 && `(${getOverdueTasks().length})`}
+          </TabsTrigger>
+        </TabsList>
 
-          {/* Calendar View */}
-          <TabsContent value="calendar" className="space-y-4">
+        {/* Calendar View */}
+        <TabsContent value="calendar" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CalendarDays className="w-5 h-5" />
+                  <CalendarDays className="w-5 h-5 text-primary" />
                   {format(date || new Date(), "MMMM yyyy")}
                 </CardTitle>
               </CardHeader>
@@ -323,7 +337,7 @@ const CareCalendar = () => {
                   onSelect={setDate}
                   className="rounded-lg border shadow-sm pointer-events-auto"
                   modifiers={{
-                    hasTask: (date) => getTasksForDate(date).length > 0,
+                    hasTask: (day) => getTasksForDate(day).length > 0,
                   }}
                   modifiersStyles={{
                     hasTask: {
@@ -338,7 +352,7 @@ const CareCalendar = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="text-lg">
                   Tasks for {format(date || new Date(), "MMM d")}
                 </CardTitle>
               </CardHeader>
@@ -351,7 +365,7 @@ const CareCalendar = () => {
                     setShowTaskDialog(true);
                   }}
                   onTaskReschedule={handleTaskReschedule}
-                  loading={loading}
+                  loading={false}
                 />
               </CardContent>
             </Card>
@@ -373,7 +387,7 @@ const CareCalendar = () => {
                   setShowTaskDialog(true);
                 }}
                 onTaskReschedule={handleTaskReschedule}
-                loading={loading}
+                loading={false}
               />
             </CardContent>
           </Card>
@@ -394,7 +408,7 @@ const CareCalendar = () => {
                   setShowTaskDialog(true);
                 }}
                 onTaskReschedule={handleTaskReschedule}
-                loading={loading}
+                loading={false}
               />
             </CardContent>
           </Card>
@@ -415,14 +429,12 @@ const CareCalendar = () => {
                   setShowTaskDialog(true);
                 }}
                 onTaskReschedule={handleTaskReschedule}
-                loading={loading}
+                loading={false}
               />
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-      </>
-      )}
 
       {/* Task Dialog */}
       <TaskDialog
@@ -434,7 +446,7 @@ const CareCalendar = () => {
         task={selectedTask}
         onSuccess={loadTasks}
       />
-    </motion.div>
+    </div>
   );
 };
 
