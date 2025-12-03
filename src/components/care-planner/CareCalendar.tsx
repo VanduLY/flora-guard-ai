@@ -67,12 +67,20 @@ const CareCalendar = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { count } = await supabase
-        .from("user_plants")
-        .select("*", { count: 'exact', head: true })
-        .eq("user_id", user.id);
+      // Check both user_plants and plant_scans tables
+      const [userPlantsResult, plantScansResult] = await Promise.all([
+        supabase
+          .from("user_plants")
+          .select("*", { count: 'exact', head: true })
+          .eq("user_id", user.id),
+        supabase
+          .from("plant_scans")
+          .select("*", { count: 'exact', head: true })
+          .eq("user_id", user.id)
+      ]);
 
-      setHasPlants((count || 0) > 0);
+      const totalPlants = (userPlantsResult.count || 0) + (plantScansResult.count || 0);
+      setHasPlants(totalPlants > 0);
     } catch (error) {
       console.error("Error checking plants:", error);
     }
@@ -253,17 +261,6 @@ const CareCalendar = () => {
         </Button>
       </div>
 
-      {/* No Plants Warning */}
-      {!hasPlants && (
-        <Card className="border-yellow-500/50 bg-yellow-500/10">
-          <CardContent className="py-6 text-center">
-            <p className="text-foreground font-medium mb-2">No plants yet!</p>
-            <p className="text-muted-foreground text-sm">
-              Add plants in the "Plants" tab first, then you can create care tasks for them.
-            </p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Weather Card */}
       {weather && (
