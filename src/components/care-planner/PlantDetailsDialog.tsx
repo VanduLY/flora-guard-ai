@@ -11,6 +11,8 @@ import {
   Edit, Trash2, CheckCircle2
 } from "lucide-react";
 import PhotoTimeline from "./PhotoTimeline";
+import PlantCareSchedule from "./PlantCareSchedule";
+import PlantHealthLog from "./PlantHealthLog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -194,23 +196,18 @@ const PlantDetailsDialog = ({ plant, onClose, onUpdate }: PlantDetailsDialogProp
           </TabsContent>
 
           <TabsContent value="care">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center py-8">
-                  Care schedule coming soon! 📅
-                </p>
-              </CardContent>
-            </Card>
+            <PlantCareSchedule 
+              plantId={plant.id} 
+              plantName={plant.nickname}
+              waterFrequency={plant.water_frequency_days}
+            />
           </TabsContent>
 
           <TabsContent value="health">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center py-8">
-                  Health monitoring coming soon! 🌡️
-                </p>
-              </CardContent>
-            </Card>
+            <PlantHealthLog 
+              plantId={plant.id} 
+              plantName={plant.nickname}
+            />
           </TabsContent>
 
           <TabsContent value="growth">
