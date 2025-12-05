@@ -51,15 +51,13 @@ const TechStack = () => {
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
+        duration: 0.5,
+        ease: [0.45, 0, 0.55, 1] as const,
       },
     },
   };
@@ -80,12 +78,12 @@ const TechStack = () => {
           transition={{ duration: 0.6 }}
         >
           <motion.div 
-            className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6 float-breathing"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={isInView ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 }}
-            transition={{ duration: 0.6, type: "spring" }}
+            className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.45, 0, 0.55, 1] }}
           >
-            <Code2 className="w-8 h-8 text-primary float-bob float-delay-2" />
+            <Code2 className="w-8 h-8 text-primary" />
           </motion.div>
           
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -107,12 +105,11 @@ const TechStack = () => {
               key={item.category}
               variants={cardVariants}
               whileHover={{ 
-                y: -6, 
-                scale: 1.02,
-                transition: { duration: 0.3 } 
+                y: -3, 
+                transition: { duration: 0.4, ease: [0.45, 0, 0.55, 1] } 
               }}
-              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 cursor-pointer glass-morph border border-border/30 group float-wave float-medium"
-              style={{ animationDelay: `${index * 0.15}s` }}
+              className="bg-card rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-500 cursor-pointer glass-morph border border-border/30 group"
+              style={{ animationDelay: `${index * 0.3}s` }}
             >
               <motion.div 
                 className={`w-full h-1 bg-gradient-to-r ${item.color} rounded-full mb-4 group-hover:h-1.5 transition-all duration-300`}

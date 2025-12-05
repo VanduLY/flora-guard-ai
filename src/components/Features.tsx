@@ -46,15 +46,13 @@ const Features = () => {
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 15,
+        duration: 0.6,
+        ease: [0.45, 0, 0.55, 1] as const,
       },
     },
   };
@@ -91,20 +89,15 @@ const Features = () => {
               key={feature.title}
               variants={cardVariants}
               whileHover={{ 
-                y: -8, 
-                scale: 1.02,
-                transition: { duration: 0.3 } 
+                y: -4, 
+                transition: { duration: 0.4, ease: [0.45, 0, 0.55, 1] } 
               }}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-300 group cursor-pointer glass-morph border border-border/50 feature-card float-gentle float-medium"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-large transition-all duration-500 group cursor-pointer glass-morph border border-border/50"
+              style={{ animationDelay: `${index * 0.5}s` }}
             >
-              <motion.div 
-                className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6 float-breathing"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <feature.icon className="w-7 h-7 text-white float-bob float-delay-1" />
-              </motion.div>
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl mb-6">
+                <feature.icon className="w-7 h-7 text-white" />
+              </div>
               
               <h3 className="text-xl font-bold text-foreground mb-3">
                 {feature.title}
