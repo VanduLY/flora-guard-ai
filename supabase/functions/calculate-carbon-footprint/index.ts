@@ -69,12 +69,29 @@ Deno.serve(async (req) => {
       const emissionFactor = EMISSION_FACTORS[activityData.activityType] || 0;
       const co2Emissions = emissionFactor * activityData.quantity;
 
+      // Verify plant_id exists in user_plants (foreign key constraint)
+      let validPlantId: string | null = null;
+      if (activityData.plantId) {
+        const { data: plant } = await supabase
+          .from('user_plants')
+          .select('id')
+          .eq('id', activityData.plantId)
+          .single();
+        
+        if (plant) {
+          validPlantId = plant.id;
+        } else {
+          // Plant is from plant_scans, not user_plants - store without plant reference
+          console.log('Plant ID not in user_plants, storing activity without plant reference');
+        }
+      }
+
       // Insert the activity
       const { data: activityLog, error: insertError } = await supabase
         .from('carbon_activities')
         .insert({
           user_id: user.id,
-          plant_id: activityData.plantId || null,
+          plant_id: validPlantId,
           activity_type: activityData.activityType,
           quantity: activityData.quantity,
           unit: activityData.unit || '',
