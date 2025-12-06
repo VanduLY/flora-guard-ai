@@ -29,6 +29,7 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const authHeader = req.headers.get('Authorization');
 
@@ -39,15 +40,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create client for database operations
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // Create auth client to verify user
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    
+    // Create admin client for database operations (bypasses RLS)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Extract JWT token from Authorization header and verify it
     const token = authHeader.replace('Bearer ', '');
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser(token);
+    } = await authClient.auth.getUser(token);
 
     if (userError || !user) {
       console.error('Auth error:', userError);
