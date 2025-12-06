@@ -10,14 +10,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Droplets, Sprout, Settings, Scissors, PackagePlus } from "lucide-react";
+import { Droplets, Sprout, Settings, Scissors, PackagePlus, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface Plant {
   id: string;
   nickname: string;
   species: string;
+  source: 'tracked' | 'scanned';
 }
 
 interface ActivityLogDialogProps {
@@ -53,13 +55,39 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
 
   const loadPlants = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch tracked plants
+      const { data: trackedPlants, error: trackedError } = await supabase
         .from('user_plants')
         .select('id, nickname, species')
         .order('nickname');
 
-      if (error) throw error;
-      setPlants(data || []);
+      if (trackedError) throw trackedError;
+
+      // Fetch scanned plants
+      const { data: scannedPlants, error: scannedError } = await supabase
+        .from('plant_scans')
+        .select('id, custom_name, plant_type')
+        .order('created_at', { ascending: false });
+
+      if (scannedError) throw scannedError;
+
+      // Combine both sources
+      const allPlants: Plant[] = [
+        ...(trackedPlants || []).map(p => ({
+          id: p.id,
+          nickname: p.nickname,
+          species: p.species,
+          source: 'tracked' as const,
+        })),
+        ...(scannedPlants || []).map(p => ({
+          id: p.id,
+          nickname: p.custom_name || p.plant_type || 'Unknown Plant',
+          species: p.plant_type || 'Scanned',
+          source: 'scanned' as const,
+        })),
+      ];
+
+      setPlants(allPlants);
     } catch (error) {
       console.error('Error loading plants:', error);
     }
@@ -140,7 +168,15 @@ export const ActivityLogDialog = ({ open, onClose, onSuccess }: ActivityLogDialo
                 <SelectItem value="none">No specific plant</SelectItem>
                 {plants.map((plant) => (
                   <SelectItem key={plant.id} value={plant.id}>
-                    {plant.nickname} ({plant.species})
+                    <div className="flex items-center gap-2">
+                      {plant.nickname} ({plant.species})
+                      {plant.source === 'scanned' && (
+                        <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4">
+                          <ScanLine className="h-2 w-2 mr-0.5" />
+                          Scan
+                        </Badge>
+                      )}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
