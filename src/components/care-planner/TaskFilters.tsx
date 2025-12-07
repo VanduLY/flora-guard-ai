@@ -31,7 +31,7 @@ const PRIORITIES = [
 
 const TaskFilters = ({ filters, onFiltersChange }: TaskFiltersProps) => {
   const [plants, setPlants] = useState<any[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   useEffect(() => {
     loadPlants();
