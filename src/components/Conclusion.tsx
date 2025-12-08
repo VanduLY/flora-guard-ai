@@ -1,13 +1,14 @@
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { Sparkles, ArrowRight, Play, X } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const Conclusion = () => {
   const navigate = useNavigate();
   const ref = useRef(null);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const statsVariants = {
@@ -97,11 +98,46 @@ const Conclusion = () => {
             <Button 
               size="lg" 
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary magnetic-btn"
+              className="border-white text-white hover:bg-white hover:text-primary magnetic-btn flex items-center gap-2"
+              onClick={() => setShowVideoModal(true)}
             >
+              <Play className="w-5 h-5" />
               Watch Demo
             </Button>
           </motion.div>
+
+          {/* Video Demo Modal */}
+          <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
+            <DialogContent className="max-w-4xl w-full p-0 bg-background/95 backdrop-blur-xl border-border overflow-hidden">
+              <DialogTitle className="sr-only">FloraGuard Demo Video</DialogTitle>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-background"
+                  onClick={() => setShowVideoModal(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+                <div className="aspect-video w-full bg-muted">
+                  <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&rel=0"
+                    title="FloraGuard Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="p-4 sm:p-6">
+                  <h3 className="text-xl font-bold text-foreground mb-2">FloraGuard AI Demo</h3>
+                  <p className="text-muted-foreground">
+                    See how FloraGuard uses AI to detect plant diseases, provide care recommendations, 
+                    and help you grow healthier plants. Upload a photo and get instant insights!
+                  </p>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <motion.div 
             className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
