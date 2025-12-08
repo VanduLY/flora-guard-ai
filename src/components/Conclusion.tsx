@@ -90,7 +90,7 @@ const Conclusion = () => {
               size="lg" 
               variant="hero"
               className="group magnetic-btn"
-              onClick={() => navigate("/detect")}
+              onClick={() => navigate("/login?signup=true")}
             >
               Join FloraGuard Today
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
