@@ -5,6 +5,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation
+function validateCoordinates(latitude: unknown, longitude: unknown): { valid: boolean; error?: string; lat?: number; lon?: number } {
+  if (latitude === undefined || longitude === undefined) {
+    return { valid: false, error: 'Latitude and longitude are required' };
+  }
+  
+  const lat = Number(latitude);
+  const lon = Number(longitude);
+  
+  if (isNaN(lat) || isNaN(lon)) {
+    return { valid: false, error: 'Latitude and longitude must be valid numbers' };
+  }
+  
+  if (lat < -90 || lat > 90) {
+    return { valid: false, error: 'Latitude must be between -90 and 90' };
+  }
+  
+  if (lon < -180 || lon > 180) {
+    return { valid: false, error: 'Longitude must be between -180 and 180' };
+  }
+  
+  return { valid: true, lat, lon };
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,26 +36,31 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude } = await req.json();
+    const body = await req.json();
+    const { latitude, longitude } = body;
 
-    if (!latitude || !longitude) {
+    // Validate inputs
+    const validation = validateCoordinates(latitude, longitude);
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ error: 'Latitude and longitude are required' }),
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const { lat, lon } = validation;
 
     const apiKey = Deno.env.get('OPENWEATHERMAP_API_KEY');
     if (!apiKey) {
       console.error('OpenWeatherMap API key not found - using demo data');
       return new Response(
-        JSON.stringify(generateDemoWeather(latitude, longitude)),
+        JSON.stringify(generateDemoWeather(lat!, lon!)),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Fetch current weather
-    const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+    const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
     const currentWeatherResponse = await fetch(currentWeatherUrl);
     
     if (!currentWeatherResponse.ok) {
@@ -40,7 +69,7 @@ serve(async (req) => {
       
       // Return demo data on API failure
       return new Response(
-        JSON.stringify(generateDemoWeather(latitude, longitude)),
+        JSON.stringify(generateDemoWeather(lat!, lon!)),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -48,7 +77,7 @@ serve(async (req) => {
     const currentWeather = await currentWeatherResponse.json();
 
     // Fetch forecast
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`;
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
     const forecastResponse = await fetch(forecastUrl);
     const forecast = forecastResponse.ok ? await forecastResponse.json() : null;
 
@@ -73,7 +102,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in get-weather function:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'An error occurred while fetching weather data' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

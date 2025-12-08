@@ -9,6 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
+import { z } from "zod";
+
+// Input validation schemas
+const emailSchema = z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters");
+const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(100, "Password must be less than 100 characters");
+
+const loginSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+});
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +27,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(searchParams.get("signup") === "true");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -27,15 +39,39 @@ const Login = () => {
     }
   }, [searchParams]);
 
+  // Clear errors when inputs change
+  useEffect(() => {
+    setEmailError("");
+  }, [email]);
+
+  useEffect(() => {
+    setPasswordError("");
+  }, [password]);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate inputs before sending to auth
+    const validationResult = loginSchema.safeParse({ email, password });
+    
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors;
+      if (errors.email?.[0]) {
+        setEmailError(errors.email[0]);
+      }
+      if (errors.password?.[0]) {
+        setPasswordError(errors.password[0]);
+      }
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: validationResult.data.email,
+          password: validationResult.data.password,
         });
 
         if (error) throw error;
@@ -47,8 +83,8 @@ const Login = () => {
         setIsSignUp(false);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: validationResult.data.email,
+          password: validationResult.data.password,
         });
 
         if (error) throw error;
@@ -228,8 +264,10 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="transition-all focus:scale-[1.02]"
+                maxLength={255}
+                className={`transition-all focus:scale-[1.02] ${emailError ? 'border-destructive' : ''}`}
               />
+              {emailError && <p className="text-sm text-destructive">{emailError}</p>}
             </motion.div>
 
             <motion.div 
@@ -249,8 +287,10 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="transition-all focus:scale-[1.02]"
+                maxLength={100}
+                className={`transition-all focus:scale-[1.02] ${passwordError ? 'border-destructive' : ''}`}
               />
+              {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
