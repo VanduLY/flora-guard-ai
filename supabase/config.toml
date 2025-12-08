@@ -1,16 +1,16 @@
 project_id = "olpxhavmucrysbdamooy"
 
 [functions.kan-analyze-plant]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-weather]
-verify_jwt = false
+verify_jwt = true
 
 [functions.calculate-carbon-footprint]
 verify_jwt = true
 
 [functions.generate-plant-notification]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-daily-email]
-verify_jwt = false
+verify_jwt = true
