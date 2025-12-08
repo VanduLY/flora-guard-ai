@@ -120,7 +120,7 @@ const Hero = () => {
               size="lg" 
               variant="hero"
               className="group cinematic-float hero-button"
-              onClick={() => navigate("/detect")}
+              onClick={() => navigate("/login?signup=true")}
             >
               Get Started
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform hero-icon" />

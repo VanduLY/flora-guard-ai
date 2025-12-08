@@ -20,13 +20,26 @@ const Footer = () => {
 
           {/* Links */}
           <nav className="flex flex-wrap justify-center gap-6 text-sm">
-            <a href="#home" className="text-muted-foreground hover:text-primary transition-colors">
+            <a 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            >
               Home
             </a>
             <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">
               About
             </a>
-            <a href="#features" className="text-muted-foreground hover:text-primary transition-colors">
+            <a 
+              href="#features"
+              onClick={(e) => { 
+                e.preventDefault(); 
+                document.querySelector('h2')?.closest('section')?.scrollIntoView({ behavior: 'smooth' });
+                const featuresSection = Array.from(document.querySelectorAll('h2')).find(h2 => h2.textContent?.includes('Proposed System Features'))?.closest('section');
+                if (featuresSection) featuresSection.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            >
               Features
             </a>
             <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">
