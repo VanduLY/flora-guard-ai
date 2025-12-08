@@ -471,7 +471,7 @@ export type Database = {
           plant_type: string | null
           recommendations: string[] | null
           tags: string[] | null
-          user_id: string | null
+          user_id: string
           weather_data: Json | null
         }
         Insert: {
@@ -488,7 +488,7 @@ export type Database = {
           plant_type?: string | null
           recommendations?: string[] | null
           tags?: string[] | null
-          user_id?: string | null
+          user_id: string
           weather_data?: Json | null
         }
         Update: {
@@ -505,7 +505,7 @@ export type Database = {
           plant_type?: string | null
           recommendations?: string[] | null
           tags?: string[] | null
-          user_id?: string | null
+          user_id?: string
           weather_data?: Json | null
         }
         Relationships: []
