@@ -7,17 +7,53 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Input validation
+function validateImageInput(imageUrl: string | undefined, imageBase64: string | undefined): { valid: boolean; error?: string } {
+  if (!imageUrl && !imageBase64) {
+    return { valid: false, error: "Image URL or base64 data required" };
+  }
+  
+  if (imageUrl) {
+    // Validate URL format
+    if (typeof imageUrl !== 'string' || imageUrl.length > 2048) {
+      return { valid: false, error: "Invalid image URL format or too long" };
+    }
+    // Basic URL validation
+    try {
+      new URL(imageUrl);
+    } catch {
+      return { valid: false, error: "Invalid URL format" };
+    }
+  }
+  
+  if (imageBase64) {
+    // Validate base64 format and size (max ~5MB base64 string)
+    if (typeof imageBase64 !== 'string' || imageBase64.length > 7000000) {
+      return { valid: false, error: "Invalid base64 data or image too large (max 5MB)" };
+    }
+    // Basic base64 validation
+    if (!/^[A-Za-z0-9+/=]+$/.test(imageBase64)) {
+      return { valid: false, error: "Invalid base64 encoding" };
+    }
+  }
+  
+  return { valid: true };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { imageUrl, imageBase64 } = await req.json();
+    const body = await req.json();
+    const { imageUrl, imageBase64 } = body;
 
-    if (!imageUrl && !imageBase64) {
+    // Validate inputs
+    const validation = validateImageInput(imageUrl, imageBase64);
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ error: "Image URL or base64 data required" }),
+        JSON.stringify({ error: validation.error }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -31,7 +67,6 @@ serve(async (req) => {
     }
 
     // Prepare image content for AI analysis
-    const imageContent = imageBase64 || imageUrl;
     const imageType = imageBase64 ? "image_url" : "image_url";
     const imageData = imageBase64
       ? `data:image/jpeg;base64,${imageBase64}`
@@ -153,7 +188,7 @@ Important rules:
     console.error("Error in kan-analyze-plant:", error);
     return new Response(
       JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error" 
+        error: "An error occurred while analyzing the image" 
       }),
       {
         status: 500,

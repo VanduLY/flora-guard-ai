@@ -5,6 +5,84 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const VALID_NOTIFICATION_TYPES = [
+  'watering_overdue', 'watering_scheduled', 'fertilizer', 
+  'sunlight_low', 'sunlight_high', 'milestone', 'pruning', 'general'
+] as const;
+
+const VALID_FORMATS = ['push', 'email'] as const;
+
+// Input validation
+function validateNotificationInput(body: unknown): { 
+  valid: boolean; 
+  error?: string;
+  data?: {
+    notificationType: string;
+    format: string;
+    userName: string;
+    plantName: string;
+    plantType: string;
+    context?: string;
+  }
+} {
+  if (!body || typeof body !== 'object') {
+    return { valid: false, error: 'Request body is required' };
+  }
+
+  const data = body as Record<string, unknown>;
+
+  // Validate notificationType
+  if (!data.notificationType || typeof data.notificationType !== 'string') {
+    return { valid: false, error: 'Notification type is required' };
+  }
+  if (!VALID_NOTIFICATION_TYPES.includes(data.notificationType as any)) {
+    return { valid: false, error: `Invalid notification type. Must be one of: ${VALID_NOTIFICATION_TYPES.join(', ')}` };
+  }
+
+  // Validate format
+  if (!data.format || typeof data.format !== 'string') {
+    return { valid: false, error: 'Format is required' };
+  }
+  if (!VALID_FORMATS.includes(data.format as any)) {
+    return { valid: false, error: 'Format must be "push" or "email"' };
+  }
+
+  // Validate userName
+  if (!data.userName || typeof data.userName !== 'string' || data.userName.length > 100) {
+    return { valid: false, error: 'User name is required and must be less than 100 characters' };
+  }
+
+  // Validate plantName
+  if (!data.plantName || typeof data.plantName !== 'string' || data.plantName.length > 200) {
+    return { valid: false, error: 'Plant name is required and must be less than 200 characters' };
+  }
+
+  // Validate plantType
+  if (!data.plantType || typeof data.plantType !== 'string' || data.plantType.length > 200) {
+    return { valid: false, error: 'Plant type is required and must be less than 200 characters' };
+  }
+
+  // Validate optional context
+  if (data.context !== undefined && (typeof data.context !== 'string' || data.context.length > 500)) {
+    return { valid: false, error: 'Context must be a string with max 500 characters' };
+  }
+
+  // Sanitize inputs - remove any potentially dangerous characters
+  const sanitize = (str: string) => str.replace(/[<>{}]/g, '').trim();
+
+  return {
+    valid: true,
+    data: {
+      notificationType: sanitize(data.notificationType as string),
+      format: data.format as string,
+      userName: sanitize(data.userName as string),
+      plantName: sanitize(data.plantName as string),
+      plantType: sanitize(data.plantType as string),
+      context: data.context ? sanitize(data.context as string) : undefined,
+    }
+  };
+}
+
 const SYSTEM_PROMPT = `You are FloraGuard's Chief Botanical Officer (CBO), a witty and caring AI with a green thumb and a great sense of humor. Your job is to generate engaging notifications for users to keep them connected to their plants.
 
 Context:
@@ -62,7 +140,18 @@ serve(async (req) => {
   }
 
   try {
-    const { notificationType, format, userName, plantName, plantType, context } = await req.json();
+    const body = await req.json();
+    
+    // Validate inputs
+    const validation = validateNotificationInput(body);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { notificationType, format, userName, plantName, plantType, context } = validation.data!;
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -154,7 +243,7 @@ Body: [email body with proper structure]`;
   } catch (error: any) {
     console.error("Error:", error);
     return new Response(
-      JSON.stringify({ error: error?.message || "Unknown error" }),
+      JSON.stringify({ error: "An error occurred while generating the notification" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

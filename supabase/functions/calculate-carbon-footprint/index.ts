@@ -14,12 +14,86 @@ const EMISSION_FACTORS = {
   repotting: 0.15, // kg CO2 per session (soil, pot production)
 };
 
+const VALID_ACTIVITY_TYPES = ['watering', 'fertilizer', 'sensor_maintenance', 'pruning', 'repotting'] as const;
+type ActivityType = typeof VALID_ACTIVITY_TYPES[number];
+
 interface ActivityInput {
-  activityType: 'watering' | 'fertilizer' | 'sensor_maintenance' | 'pruning' | 'repotting';
+  activityType: ActivityType;
   quantity: number;
   unit?: string;
   plantId?: string;
   notes?: string;
+}
+
+// Input validation
+function validateActivityInput(activity: unknown): { valid: boolean; error?: string; data?: ActivityInput } {
+  if (!activity || typeof activity !== 'object') {
+    return { valid: false, error: 'Activity data is required' };
+  }
+
+  const act = activity as Record<string, unknown>;
+  
+  // Validate activityType
+  if (!act.activityType || typeof act.activityType !== 'string') {
+    return { valid: false, error: 'Activity type is required' };
+  }
+  if (!VALID_ACTIVITY_TYPES.includes(act.activityType as ActivityType)) {
+    return { valid: false, error: `Invalid activity type. Must be one of: ${VALID_ACTIVITY_TYPES.join(', ')}` };
+  }
+
+  // Validate quantity
+  if (act.quantity === undefined || typeof act.quantity !== 'number') {
+    return { valid: false, error: 'Quantity must be a number' };
+  }
+  if (act.quantity <= 0 || act.quantity > 10000) {
+    return { valid: false, error: 'Quantity must be between 0 and 10000' };
+  }
+
+  // Validate optional fields
+  if (act.unit !== undefined && (typeof act.unit !== 'string' || act.unit.length > 50)) {
+    return { valid: false, error: 'Unit must be a string with max 50 characters' };
+  }
+  if (act.plantId !== undefined && (typeof act.plantId !== 'string' || act.plantId.length > 100)) {
+    return { valid: false, error: 'Plant ID must be a valid string' };
+  }
+  if (act.notes !== undefined && (typeof act.notes !== 'string' || act.notes.length > 1000)) {
+    return { valid: false, error: 'Notes must be a string with max 1000 characters' };
+  }
+
+  return {
+    valid: true,
+    data: {
+      activityType: act.activityType as ActivityType,
+      quantity: act.quantity as number,
+      unit: act.unit as string | undefined,
+      plantId: act.plantId as string | undefined,
+      notes: act.notes as string | undefined,
+    }
+  };
+}
+
+function validateDateRange(startDate: unknown, endDate: unknown): { valid: boolean; error?: string } {
+  if (!startDate || !endDate) {
+    return { valid: false, error: 'Start date and end date are required' };
+  }
+  
+  if (typeof startDate !== 'string' || typeof endDate !== 'string') {
+    return { valid: false, error: 'Dates must be strings in ISO format' };
+  }
+
+  // Validate ISO date format
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return { valid: false, error: 'Invalid date format. Use ISO 8601 format' };
+  }
+
+  if (start > end) {
+    return { valid: false, error: 'Start date must be before end date' };
+  }
+
+  return { valid: true };
 }
 
 Deno.serve(async (req) => {
@@ -61,11 +135,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { activity, action } = await req.json();
+    const body = await req.json();
+    const { activity, action } = body;
+
+    // Validate action
+    if (!action || !['log', 'summary'].includes(action)) {
+      return new Response(JSON.stringify({ error: 'Invalid action. Must be "log" or "summary"' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (action === 'log') {
-      // Calculate emissions for the activity
-      const activityData: ActivityInput = activity;
+      // Validate activity input
+      const validation = validateActivityInput(activity);
+      if (!validation.valid) {
+        return new Response(JSON.stringify({ error: validation.error }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const activityData = validation.data!;
       const emissionFactor = EMISSION_FACTORS[activityData.activityType] || 0;
       const co2Emissions = emissionFactor * activityData.quantity;
 
@@ -119,8 +210,15 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'summary') {
-      // Get summary for a date range
-      const { startDate, endDate } = activity;
+      // Validate date range
+      const { startDate, endDate } = activity || {};
+      const dateValidation = validateDateRange(startDate, endDate);
+      if (!dateValidation.valid) {
+        return new Response(JSON.stringify({ error: dateValidation.error }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       const { data: activities, error: fetchError } = await supabase
         .from('carbon_activities')
@@ -174,7 +272,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error in calculate-carbon-footprint function:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: 'An error occurred while processing your request' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
