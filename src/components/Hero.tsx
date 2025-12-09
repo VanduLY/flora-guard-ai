@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Leaf, UserPlus } from "lucide-react";
+import { ArrowRight, Sparkles, Leaf } from "lucide-react";
 import heroImage from "@/assets/hero-plants.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -110,26 +110,17 @@ const Hero = () => {
           </motion.p>
           
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex justify-center"
             variants={itemVariants}
           >
             <Button 
               size="lg" 
               variant="hero"
-              className="group cinematic-float hero-button"
+              className="group cinematic-float hero-button text-lg px-8 py-6"
               onClick={() => navigate("/login?signup=true")}
             >
               Get Started
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform hero-icon" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary cinematic-float hero-button flex items-center gap-2"
-              onClick={() => navigate("/login?signup=true")}
-            >
-              <UserPlus className="w-5 h-5" />
-              Sign Up
             </Button>
           </motion.div>
         </div>
