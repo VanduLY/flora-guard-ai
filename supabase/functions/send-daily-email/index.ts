@@ -199,7 +199,12 @@ serve(async (req) => {
   try {
     console.log("Starting daily email send...");
     
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    
+    const resend = new Resend(resendApiKey);
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     
@@ -237,7 +242,10 @@ serve(async (req) => {
         const { data: authData } = await supabase.auth.admin.getUserById(pref.user_id);
         const userEmail = authData?.user?.email;
         
-        if (!userEmail) continue;
+        if (!userEmail) {
+          console.log(`No email found for user ${pref.user_id}`);
+          continue;
+        }
 
         // Get user profile for personalization
         const { data: profile } = await supabase
@@ -249,14 +257,16 @@ serve(async (req) => {
         const userName = profile?.full_name || profile?.username || "Plant Parent";
         const html = generateEmailHTML(emailContent, userName);
 
+        console.log(`Sending email to ${userEmail}...`);
+
         // Send email via Resend
         const { data, error } = await resend.emails.send({
-         from: "FloraGuard <notifications@on.resend.dev>",
+          from: "FloraGuard <onboarding@resend.dev>",
           to: [userEmail],
           subject: emailContent.subject,
           html: html,
         });
-from: "FloraGuard <notifications@on.resend.dev>"
+
         if (error) {
           console.error(`Failed to send to ${userEmail}:`, error);
           results.push({ email: userEmail, status: "failed", error: error.message });
@@ -270,7 +280,7 @@ from: "FloraGuard <notifications@on.resend.dev>"
             metadata: { error: error.message }
           });
         } else {
-          console.log(`Successfully sent to ${userEmail}`);
+          console.log(`Successfully sent to ${userEmail}, id: ${data?.id}`);
           results.push({ email: userEmail, status: "sent", id: data?.id });
           
           // Log successful email
