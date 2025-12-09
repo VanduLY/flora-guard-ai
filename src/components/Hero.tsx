@@ -1,15 +1,12 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Leaf, Play, X } from "lucide-react";
+import { ArrowRight, Sparkles, Leaf, UserPlus } from "lucide-react";
 import heroImage from "@/assets/hero-plants.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDepthFloating, useMicroBreathing, useLiquidIconFloat } from "@/hooks/use-cinematic-float";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const [showVideoModal, setShowVideoModal] = useState(false);
   
   // Apply cinematic floating animations
   useDepthFloating('.hero-title', 'foreground');
@@ -129,47 +126,15 @@ const Hero = () => {
               size="lg" 
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-primary cinematic-float hero-button flex items-center gap-2"
-              onClick={() => setShowVideoModal(true)}
+              onClick={() => navigate("/login?signup=true")}
             >
-              <Play className="w-5 h-5" />
-              Watch Demo
+              <UserPlus className="w-5 h-5" />
+              Sign Up
             </Button>
           </motion.div>
         </div>
       </motion.div>
 
-      {/* Video Demo Modal */}
-      <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
-        <DialogContent className="max-w-4xl w-full p-0 bg-background/95 backdrop-blur-xl border-border overflow-hidden">
-          <DialogTitle className="sr-only">FloraGuard Demo Video</DialogTitle>
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-background"
-              onClick={() => setShowVideoModal(false)}
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <div className="aspect-video w-full bg-muted">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&rel=0"
-                title="FloraGuard Demo"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div className="p-4 sm:p-6">
-              <h3 className="text-xl font-bold text-foreground mb-2">FloraGuard AI Demo</h3>
-              <p className="text-muted-foreground">
-                See how FloraGuard uses AI to detect plant diseases, provide care recommendations, 
-                and help you grow healthier plants. Upload a photo and get instant insights!
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Scroll indicator - Leaf */}
       <motion.div 
