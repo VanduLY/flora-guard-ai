@@ -7,6 +7,9 @@ import {
   TrendingUp,
   Leaf,
   Droplet,
+  AlertCircle,
+  Shield,
+  Clock,
 } from "lucide-react";
 import { Progress } from "./ui/progress";
 import {
@@ -19,13 +22,17 @@ import { Badge } from "./ui/badge";
 
 interface KanDiseaseResultsProps {
   result: {
-    healthStatus: "healthy" | "diseased" | "unknown";
+    healthStatus: "healthy" | "diseased" | "stressed" | "unknown";
     plantType?: string;
     diseaseDetected?: string | null;
+    severity?: "none" | "mild" | "moderate" | "severe";
     confidenceScore: number;
     diagnosis: string;
     symptoms?: string[];
     recommendations: string[];
+    urgency?: "none" | "low" | "medium" | "high";
+    preventionTips?: string[];
+    processingTimeMs?: number;
   };
   isAnalyzing: boolean;
 }
@@ -44,7 +51,7 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
             Analyzing your plant...
           </p>
           <p className="text-sm text-muted-foreground">
-            AI is examining the image for diseases and health issues
+            AI-powered disease detection in progress
           </p>
         </div>
       </motion.div>
@@ -57,6 +64,8 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
         return <CheckCircle className="w-12 h-12 text-green-500" />;
       case "diseased":
         return <AlertTriangle className="w-12 h-12 text-destructive" />;
+      case "stressed":
+        return <AlertCircle className="w-12 h-12 text-yellow-500" />;
       default:
         return <HelpCircle className="w-12 h-12 text-muted-foreground" />;
     }
@@ -68,6 +77,8 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
         return "text-green-500";
       case "diseased":
         return "text-destructive";
+      case "stressed":
+        return "text-yellow-500";
       default:
         return "text-muted-foreground";
     }
@@ -79,8 +90,36 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
         return "bg-green-500/10";
       case "diseased":
         return "bg-destructive/10";
+      case "stressed":
+        return "bg-yellow-500/10";
       default:
         return "bg-muted";
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case "mild":
+        return "bg-yellow-500/20 text-yellow-600";
+      case "moderate":
+        return "bg-orange-500/20 text-orange-600";
+      case "severe":
+        return "bg-destructive/20 text-destructive";
+      default:
+        return "bg-green-500/20 text-green-600";
+    }
+  };
+
+  const getUrgencyColor = (urgency: string) => {
+    switch (urgency) {
+      case "low":
+        return "text-yellow-500";
+      case "medium":
+        return "text-orange-500";
+      case "high":
+        return "text-destructive";
+      default:
+        return "text-green-500";
     }
   };
 
@@ -98,13 +137,26 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
             {result.healthStatus}
           </h3>
           {result.plantType && (
-            <p className="text-muted-foreground">Plant Type: {result.plantType}</p>
+            <p className="text-muted-foreground">{result.plantType}</p>
           )}
-          {result.diseaseDetected && (
-            <Badge variant="destructive" className="mt-2">
-              {result.diseaseDetected}
-            </Badge>
-          )}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {result.diseaseDetected && (
+              <Badge variant="destructive">
+                {result.diseaseDetected}
+              </Badge>
+            )}
+            {result.severity && result.severity !== "none" && (
+              <Badge className={getSeverityColor(result.severity)}>
+                {result.severity} severity
+              </Badge>
+            )}
+            {result.urgency && result.urgency !== "none" && (
+              <Badge variant="outline" className={getUrgencyColor(result.urgency)}>
+                <Clock className="w-3 h-3 mr-1" />
+                {result.urgency} urgency
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
@@ -153,12 +205,12 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
 
       {/* Recommendations */}
       {result.recommendations && result.recommendations.length > 0 && (
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible defaultValue="recommendations" className="w-full">
           <AccordionItem value="recommendations">
             <AccordionTrigger className="text-foreground font-semibold">
               <div className="flex items-center gap-2">
                 <Droplet className="w-5 h-5 text-primary" />
-                Treatment & Care Recommendations
+                Treatment & Care ({result.recommendations.length})
               </div>
             </AccordionTrigger>
             <AccordionContent>
@@ -168,7 +220,7 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                     className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg"
                   >
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold">
@@ -181,6 +233,40 @@ const KanDiseaseResults = ({ result, isAnalyzing }: KanDiseaseResultsProps) => {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+      )}
+
+      {/* Prevention Tips */}
+      {result.preventionTips && result.preventionTips.length > 0 && (
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="prevention">
+            <AccordionTrigger className="text-foreground font-semibold">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-primary" />
+                Prevention Tips
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <ul className="space-y-2 pt-2">
+                {result.preventionTips.map((tip, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-2 text-muted-foreground"
+                  >
+                    <Shield className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+
+      {/* Processing Time */}
+      {result.processingTimeMs && (
+        <p className="text-xs text-muted-foreground text-center">
+          Analyzed in {(result.processingTimeMs / 1000).toFixed(1)}s
+        </p>
       )}
     </motion.div>
   );
