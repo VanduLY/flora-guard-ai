@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Cloud, CloudRain, Sun, Wind, Droplet, AlertTriangle, MapPin, Loader2 } from "lucide-react";
+import { Cloud, CloudRain, Sun, Wind, Droplet, AlertTriangle, MapPin, Loader2, Snowflake, CloudLightning } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const KanWeatherAlerts = () => {
   const [weather, setWeather] = useState<any>(null);
@@ -89,10 +90,21 @@ const KanWeatherAlerts = () => {
   if (!weather) return null;
 
   const getWeatherIcon = () => {
-    const condition = weather.condition.toLowerCase();
-    if (condition.includes('rain') || condition.includes('drizzle')) return <CloudRain className="w-12 h-12 text-primary" />;
-    if (condition.includes('cloud')) return <Cloud className="w-12 h-12 text-primary" />;
+    const cond = weather.condition.toLowerCase();
+    if (cond.includes('thunder')) return <CloudLightning className="w-12 h-12 text-primary" />;
+    if (cond.includes('rain') || cond.includes('drizzle')) return <CloudRain className="w-12 h-12 text-primary" />;
+    if (cond.includes('snow')) return <Snowflake className="w-12 h-12 text-primary" />;
+    if (cond.includes('cloud')) return <Cloud className="w-12 h-12 text-primary" />;
     return <Sun className="w-12 h-12 text-primary" />;
+  };
+
+  const getForecastIcon = (condition: string) => {
+    const cond = condition.toLowerCase();
+    if (cond.includes('thunder')) return <CloudLightning className="w-6 h-6 text-primary" />;
+    if (cond.includes('rain') || cond.includes('drizzle')) return <CloudRain className="w-6 h-6 text-primary" />;
+    if (cond.includes('snow')) return <Snowflake className="w-6 h-6 text-primary" />;
+    if (cond.includes('cloud')) return <Cloud className="w-6 h-6 text-primary" />;
+    return <Sun className="w-6 h-6 text-primary" />;
   };
 
   return (
@@ -141,6 +153,31 @@ const KanWeatherAlerts = () => {
           </div>
         </div>
       </div>
+
+      {/* 5-Day Forecast */}
+      {weather.forecast?.daily && weather.forecast.daily.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="font-semibold text-foreground text-sm">5-Day Forecast</h4>
+          <div className="grid grid-cols-5 gap-2">
+            {weather.forecast.daily.map((day: any, index: number) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="flex flex-col items-center p-2 bg-primary/5 rounded-lg text-center"
+              >
+                <span className="text-xs font-medium text-foreground">{day.dayName}</span>
+                {getForecastIcon(day.condition)}
+                <div className="mt-1">
+                  <span className="text-sm font-bold text-foreground">{day.maxTemp}°</span>
+                  <span className="text-xs text-muted-foreground ml-1">{day.minTemp}°</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Disease Risk Alerts */}
       {weather.alerts && weather.alerts.length > 0 && (
