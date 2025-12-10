@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,18 +6,16 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Input validation
+// Input validation - optimized
 function validateImageInput(imageUrl: string | undefined, imageBase64: string | undefined): { valid: boolean; error?: string } {
   if (!imageUrl && !imageBase64) {
     return { valid: false, error: "Image URL or base64 data required" };
   }
   
   if (imageUrl) {
-    // Validate URL format
     if (typeof imageUrl !== 'string' || imageUrl.length > 2048) {
-      return { valid: false, error: "Invalid image URL format or too long" };
+      return { valid: false, error: "Invalid image URL" };
     }
-    // Basic URL validation
     try {
       new URL(imageUrl);
     } catch {
@@ -27,13 +24,8 @@ function validateImageInput(imageUrl: string | undefined, imageBase64: string | 
   }
   
   if (imageBase64) {
-    // Validate base64 format and size (max ~5MB base64 string)
     if (typeof imageBase64 !== 'string' || imageBase64.length > 7000000) {
-      return { valid: false, error: "Invalid base64 data or image too large (max 5MB)" };
-    }
-    // Basic base64 validation
-    if (!/^[A-Za-z0-9+/=]+$/.test(imageBase64)) {
-      return { valid: false, error: "Invalid base64 encoding" };
+      return { valid: false, error: "Image too large (max 5MB)" };
     }
   }
   
@@ -45,19 +37,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const startTime = Date.now();
+
   try {
     const body = await req.json();
     const { imageUrl, imageBase64 } = body;
 
-    // Validate inputs
     const validation = validateImageInput(imageUrl, imageBase64);
     if (!validation.valid) {
       return new Response(
         JSON.stringify({ error: validation.error }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -66,15 +56,13 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    // Prepare image content for AI analysis
-    const imageType = imageBase64 ? "image_url" : "image_url";
     const imageData = imageBase64
       ? `data:image/jpeg;base64,${imageBase64}`
       : imageUrl;
 
-    console.log("Analyzing plant image with AI...");
+    console.log("Starting plant analysis...");
 
-    // Call Lovable AI for vision analysis
+    // Use gemini-2.5-flash for optimal speed + accuracy balance
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
@@ -88,112 +76,113 @@ serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are an expert plant pathologist AI. Analyze plant images for diseases and health issues.
-              
-Your response must be ONLY a valid JSON object with this exact structure:
+              content: `You are a rapid plant disease detection AI specialist. Analyze images quickly and accurately.
+
+RESPOND ONLY with this JSON structure:
 {
-  "healthStatus": "healthy" or "diseased" or "unknown",
-  "plantType": "string - identified plant type",
-  "diseaseDetected": "string - disease name if detected, or null if healthy",
-  "confidenceScore": number between 0-100,
-  "diagnosis": "string - detailed diagnosis",
-  "symptoms": ["array of observed symptoms"],
-  "recommendations": ["array of treatment/care recommendations"]
+  "healthStatus": "healthy" | "diseased" | "stressed" | "unknown",
+  "plantType": "identified species or 'Unknown plant'",
+  "diseaseDetected": "specific disease name or null",
+  "severity": "none" | "mild" | "moderate" | "severe",
+  "confidenceScore": 0-100,
+  "diagnosis": "2-3 sentence diagnosis",
+  "symptoms": ["symptom1", "symptom2"],
+  "recommendations": ["action1", "action2", "action3"],
+  "urgency": "none" | "low" | "medium" | "high",
+  "preventionTips": ["tip1", "tip2"]
 }
 
-Important rules:
-- Only respond with the JSON object, no additional text
-- If the plant appears healthy, set healthStatus to "healthy" and diseaseDetected to null
-- If you detect a disease, provide specific disease name and detailed recommendations
-- Base confidence score on clarity of symptoms and image quality
-- If image is unclear or not a plant, set healthStatus to "unknown"`,
+DETECTION RULES:
+- Look for: leaf spots, discoloration, wilting, mold, pests, nutrient deficiency signs
+- Common diseases: powdery mildew, leaf spot, rust, blight, root rot, aphids, spider mites
+- Set "stressed" for non-disease issues like overwatering, underwatering, light stress
+- High confidence (80+) only with clear, visible symptoms
+- Include actionable, specific recommendations
+- Be concise but thorough`
             },
             {
               role: "user",
               content: [
                 {
                   type: "text",
-                  text: "Analyze this plant image for diseases or health issues. Provide diagnosis and treatment recommendations.",
+                  text: "Analyze this plant image. Identify species, detect any diseases, assess health, and provide treatment recommendations."
                 },
                 {
-                  type: imageType,
-                  image_url: {
-                    url: imageData,
-                  },
-                },
-              ],
-            },
-          ],
-        }),
+                  type: "image_url",
+                  image_url: { url: imageData }
+                }
+              ]
+            }
+          ]
+        })
       }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI API error:", response.status, errorText);
+      console.error("AI error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ 
-            error: "Rate limit exceeded. Please try again in a few moments." 
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
+          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ 
-            error: "AI credits depleted. Please add credits to continue." 
-          }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
+          JSON.stringify({ error: "AI credits depleted." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      throw new Error(`AI API error: ${response.status}`);
+      throw new Error(`AI error: ${response.status}`);
     }
 
     const aiResponse = await response.json();
-    console.log("AI Response received");
-
     const aiContent = aiResponse.choices?.[0]?.message?.content;
+    
     if (!aiContent) {
-      throw new Error("No content in AI response");
+      throw new Error("Empty AI response");
     }
 
-    // Parse AI response
+    // Parse JSON response
     let analysisResult;
     try {
-      // Extract JSON from response (handle potential markdown code blocks)
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
       const jsonStr = jsonMatch ? jsonMatch[0] : aiContent;
       analysisResult = JSON.parse(jsonStr);
+      
+      // Ensure required fields with defaults
+      analysisResult = {
+        healthStatus: analysisResult.healthStatus || "unknown",
+        plantType: analysisResult.plantType || "Unknown plant",
+        diseaseDetected: analysisResult.diseaseDetected || null,
+        severity: analysisResult.severity || "none",
+        confidenceScore: Math.min(100, Math.max(0, analysisResult.confidenceScore || 50)),
+        diagnosis: analysisResult.diagnosis || "Unable to determine diagnosis",
+        symptoms: Array.isArray(analysisResult.symptoms) ? analysisResult.symptoms : [],
+        recommendations: Array.isArray(analysisResult.recommendations) ? analysisResult.recommendations : ["Monitor plant health regularly"],
+        urgency: analysisResult.urgency || "none",
+        preventionTips: Array.isArray(analysisResult.preventionTips) ? analysisResult.preventionTips : []
+      };
     } catch (parseError) {
-      console.error("Failed to parse AI response:", aiContent);
-      throw new Error("Invalid AI response format");
+      console.error("Parse error:", aiContent);
+      throw new Error("Invalid response format");
     }
 
-    console.log("Analysis complete:", analysisResult);
+    const processingTime = Date.now() - startTime;
+    console.log(`Analysis complete in ${processingTime}ms:`, analysisResult.healthStatus);
 
-    return new Response(JSON.stringify(analysisResult), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error in kan-analyze-plant:", error);
     return new Response(
-      JSON.stringify({ 
-        error: "An error occurred while analyzing the image" 
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ ...analysisResult, processingTimeMs: processingTime }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Analysis error:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to analyze image. Please try again." }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
