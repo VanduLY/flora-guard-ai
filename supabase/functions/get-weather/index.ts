@@ -208,7 +208,52 @@ function processForecast(forecast: any) {
     icon: item.weather[0].icon,
   }));
 
-  return next24Hours;
+  // Get 5-day forecast (daily summaries)
+  const dailyForecast: any[] = [];
+  const dayMap = new Map<string, any[]>();
+  
+  forecast.list.forEach((item: any) => {
+    const date = new Date(item.dt * 1000).toDateString();
+    if (!dayMap.has(date)) {
+      dayMap.set(date, []);
+    }
+    dayMap.get(date)?.push(item);
+  });
+
+  let dayCount = 0;
+  dayMap.forEach((items, date) => {
+    if (dayCount >= 5) return;
+    
+    const temps = items.map((i: any) => i.main.temp);
+    const minTemp = Math.round(Math.min(...temps));
+    const maxTemp = Math.round(Math.max(...temps));
+    
+    // Get most common condition
+    const conditions = items.map((i: any) => i.weather[0].main);
+    const conditionCount = conditions.reduce((acc: any, c: string) => {
+      acc[c] = (acc[c] || 0) + 1;
+      return acc;
+    }, {});
+    const mainCondition = Object.keys(conditionCount).reduce((a, b) => 
+      conditionCount[a] > conditionCount[b] ? a : b
+    );
+    
+    const midItem = items[Math.floor(items.length / 2)];
+    
+    dailyForecast.push({
+      date: new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+      dayName: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
+      minTemp,
+      maxTemp,
+      condition: mainCondition,
+      icon: midItem.weather[0].icon,
+      humidity: Math.round(items.reduce((acc: number, i: any) => acc + i.main.humidity, 0) / items.length),
+    });
+    
+    dayCount++;
+  });
+
+  return { hourly: next24Hours, daily: dailyForecast };
 }
 
 function generateDemoWeather(latitude: number, longitude: number) {
